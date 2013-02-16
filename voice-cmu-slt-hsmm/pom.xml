@@ -144,6 +144,34 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>chronos-jmeter-maven-plugin</artifactId>
+				<version>1.1.0</version>
+				<configuration>
+					<input>${basedir}/src/main/resources/arctic.jmx</input>
+				</configuration>
+				<executions>
+					<execution>
+						<id>jmeter</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jmeter</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
+
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>chronos-maven-plugin</artifactId>
+				<version>1.1.0</version>
+			</plugin>
+		</plugins>
+	</reporting>
 </project>
