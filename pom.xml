@@ -86,6 +86,16 @@
 
 	<distributionManagement>
 		<downloadUrl>https://bitbucket.org/marytts/marytts/downloads</downloadUrl>
+		<repository>
+			<id>diax</id>
+			<name>diax-releases</name>
+			<url>http://diax.coli.uni-saarland.de/artifactory/marytts</url>
+		</repository>
+		<snapshotRepository>
+			<id>diax</id>
+			<name>diax-snapshots</name>
+			<url>http://diax.coli.uni-saarland.de/artifactory/marytts</url>
+		</snapshotRepository>
 	</distributionManagement>
 	<mailingLists>
 		<mailingList>
