@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>marytts</groupId>
 	<artifactId>marytts</artifactId>
-	<version>5.1-SNAPSHOT</version>
+	<version>5.1-beta2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>MARY TTS</name>
@@ -85,6 +84,10 @@
 	</contributors>
 
 	<distributionManagement>
+	   <site>
+		<id>DFKI</id>
+		<url>scpexe://mary:/local/mary/www</url>
+	   </site>
 		<downloadUrl>https://bitbucket.org/marytts/marytts/downloads</downloadUrl>
 		<repository>
 			<id>diax</id>
@@ -121,7 +124,8 @@
 		<url>https://github.com/marytts/marytts</url>
 		<connection>scm:git:https://github.com/marytts/marytts.git</connection>
 		<developerConnection>scm:git:https://github.com/marytts/marytts.git</developerConnection>
-	</scm>
+	  <tag>HEAD</tag>
+  </scm>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -333,53 +337,18 @@
 		</repository>
 	</repositories>
 
-	<!-- The following snipped automatically activates maven-site-plugin 3.x when run with Maven 3.x -->
-	<profiles>
-		<profile>
-			<id>maven-3</id>
-			<activation>
-				<file>
-					<!-- This employs that the basedir expression is only recognized by Maven 3.x (see MNG-2363) -->
-					<exists>${basedir}</exists>
-				</file>
-			</activation>
-			<build>
-				<pluginManagement>
-					<plugins>
-						<plugin>
-							<groupId>org.apache.maven.plugins</groupId>
-							<artifactId>maven-site-plugin</artifactId>
-							<version>3.0-beta-3</version>
-						</plugin>
-					</plugins>
-				</pluginManagement>
-				<plugins>
-					<plugin>
-						<artifactId>maven-site-plugin</artifactId>
-						<!--
-							<executions>
-							<execution>
-							<id>attach-descriptor</id>
-							<goals>
-							<goal>attach-descriptor</goal>
-							</goals>
-							</execution>
-							</executions>
-						-->
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
-
 	<build>
 		<!-- To define the plugin version in your parent POM -->
 		<pluginManagement>
 			<plugins>
 				<plugin>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>2.4.2</version>
+				</plugin>
+				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-site-plugin</artifactId>
-					<version>2.2</version>
+					<version>3.3</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -507,12 +476,47 @@
 		<plugins>
 			<!-- Generate a number of generic site description pages: -->
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>2.2</version>
+				<version>2.7</version>
+				<reportSets>
+					<reportSet>
+            			<reports>
+              				<!-- <report>dependencies</report> -->
+              				<report>index</report>
+              				<report>project-team</report>
+              				<report>mailing-list</report>
+              				<report>cim</report>
+              				<report>issue-tracking</report>
+              				<report>license</report>
+              				<report>scm</report>
+            			</reports>
+          			</reportSet>
+          		</reportSets>
+			</plugin>
+			<!-- Generate javadoc -->
+			<plugin>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<configuration>
+					<destDir>javadoc</destDir>
+				</configuration>
+				<reportSets>
+					<reportSet>
+						<id>default</id>
+						<reports>
+							<report>javadoc</report>
+						</reports>
+					</reportSet>
+					<reportSet>
+						<id>aggregate</id>
+						<reports>
+							<report>aggregate</report>
+						</reports>
+					</reportSet>
+				</reportSets>
 			</plugin>
 			<!-- Look for duplicate code (CPD): -->
-			<plugin>
+<!-- 			<plugin>
 				<artifactId>maven-pmd-plugin</artifactId>
 				<version>2.5</version>
 				<configuration>
@@ -523,21 +527,22 @@
 					<reportSets>
 						<reportSet>
 							<reports>
-								<!--report>pmd</report -->
+								report>pmd</report
 								<report>cpd</report>
 							</reports>
 						</reportSet>
 					</reportSets>
 				</configuration>
-			</plugin>
+			</plugin> -->
 			<!-- Check style guidelines -->
-			<!--plugin>
+<!-- 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
 				<version>2.6</version>
-				</plugin -->
+			</plugin>
+ -->
 			<!-- Look for typical programming mistakes: -->
-			<plugin>
+<!-- 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
 				<version>2.3.1</version>
@@ -545,17 +550,17 @@
 					<findbugsXmlOutput>true</findbugsXmlOutput>
 					<findbugsXmlWithMessages>true</findbugsXmlWithMessages>
 					<xmlOutput>true</xmlOutput>
-					<!--excludeFilterFile>findbugs-excludes.xml</excludeFilterFile -->
+					excludeFilterFile>findbugs-excludes.xml</excludeFilterFile
 				</configuration>
 			</plugin>
-			<!-- Measure the test code coverage: -->
-			<plugin>
+ -->			<!-- Measure the test code coverage: -->
+<!-- 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>emma-maven-plugin</artifactId>
 				<version>1.0-alpha-3</version>
 			</plugin>
-			<!-- Web page presenting unit test results: -->
-			<plugin>
+ -->			<!-- Web page presenting unit test results: -->
+		<!-- 	<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-report-plugin</artifactId>
 				<version>2.7.1</version>
@@ -566,23 +571,14 @@
 						</reports>
 					</reportSet>
 				</reportSets>
-			</plugin>
+			</plugin> -->
 			<!-- Number of lines of code: -->
-			<plugin>
+<!-- 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>javancss-maven-plugin</artifactId>
 				<version>2.0</version>
 			</plugin>
-
-			<!-- Generate javadoc: -->
-			<!-- deactivating for now because it triggers a fork for each subproject -->
-			<!--
-				<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.7</version>
-				</plugin>
-			-->
+ -->
 		</plugins>
 	</reporting>
 
