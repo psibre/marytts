@@ -567,6 +567,9 @@ public class HTKLabeler extends VoiceImportComponent {
          */
         private void delete_multiple_sp_in_PhoneMLFile(String filein, String fileout) throws Exception{
             String hled = getProp(HTKDIR)+File.separator+"HLEd";
+            if(SystemUtils.IS_OS_WINDOWS){
+            	hled += ".exe";
+            }
             File htkFile = new File(hled);
             if (!htkFile.exists()) {
                 throw new RuntimeException("File "+htkFile.getAbsolutePath()+" does not exist");
@@ -585,7 +588,12 @@ public class HTKLabeler extends VoiceImportComponent {
                 
             Runtime rtime = Runtime.getRuntime();
             //get a shell
-            Process process = rtime.exec("/bin/bash");
+            Process process;
+            if(SystemUtils.IS_OS_WINDOWS){
+            	process = rtime.exec("cmd");
+            }else{
+            	process = rtime.exec("/bin/bash");
+            }
             //get an output stream to write to the shell
             PrintWriter pw = new PrintWriter(
                     new OutputStreamWriter(process.getOutputStream()));
@@ -614,6 +622,9 @@ public class HTKLabeler extends VoiceImportComponent {
          */
         private void createPhoneMLFile() throws Exception{
             String hled = getProp(HTKDIR)+File.separator+"HLEd";
+            if(SystemUtils.IS_OS_WINDOWS){
+            	hled += ".exe";
+            }
             File htkFile = new File(hled);
             if (!htkFile.exists()) {
                 throw new RuntimeException("File "+htkFile.getAbsolutePath()+" does not exist");
@@ -629,7 +640,12 @@ public class HTKLabeler extends VoiceImportComponent {
                 
             Runtime rtime = Runtime.getRuntime();
             //get a shell
-            Process process = rtime.exec("/bin/bash");
+            Process process;
+            if(SystemUtils.IS_OS_WINDOWS){
+            	process = rtime.exec("cmd");
+            }else{
+            	process = rtime.exec("/bin/bash");
+            }
             //get an output stream to write to the shell
             PrintWriter pw = new PrintWriter(
                     new OutputStreamWriter(process.getOutputStream()));
@@ -662,6 +678,9 @@ public class HTKLabeler extends VoiceImportComponent {
         private void featureExtraction() throws Exception {
             
             String hcopy = getProp(HTKDIR)+File.separator+"HCopy";
+            if(SystemUtils.IS_OS_WINDOWS){
+            	hcopy += ".exe";
+            }
             File htkFile = new File(hcopy);
             if (!htkFile.exists()) {
                 throw new RuntimeException("File "+htkFile.getAbsolutePath()+" does not exist");
@@ -672,7 +691,12 @@ public class HTKLabeler extends VoiceImportComponent {
                 +"etc"+File.separator+"featEx.list";
             Runtime rtime = Runtime.getRuntime();
             //get a shell
-            Process process = rtime.exec("/bin/bash");
+            Process process;
+            if(SystemUtils.IS_OS_WINDOWS){
+            	process = rtime.exec("cmd");
+            }else{
+            	process = rtime.exec("/bin/bash");
+            }
             //get an output stream to write to the shell
             PrintWriter pw = new PrintWriter(
                     new OutputStreamWriter(process.getOutputStream()));
@@ -700,6 +724,9 @@ public class HTKLabeler extends VoiceImportComponent {
         private void initialiseHTKTrain() throws Exception{
             
             String hcompv = getProp(HTKDIR)+File.separator+"HCompV";
+            if(SystemUtils.IS_OS_WINDOWS){
+            	hcompv += ".exe";
+            }
             File htkFile = new File(hcompv);
             if (!htkFile.exists()) {
                 throw new RuntimeException("File "+htkFile.getAbsolutePath()+" does not exist");
@@ -710,7 +737,12 @@ public class HTKLabeler extends VoiceImportComponent {
                 +"etc"+File.separator+"htkTrain.list";
             Runtime rtime = Runtime.getRuntime();
             //get a shell
-            Process process = rtime.exec("/bin/bash");
+            Process process;
+            if(SystemUtils.IS_OS_WINDOWS){
+            	process = rtime.exec("cmd");
+            }else{
+            	process = rtime.exec("/bin/bash");
+            }
             //get an output stream to write to the shell
             PrintWriter pw = new PrintWriter(
                     new OutputStreamWriter(process.getOutputStream()));
@@ -775,7 +807,12 @@ public class HTKLabeler extends VoiceImportComponent {
             
             Runtime rtime = Runtime.getRuntime();
             //get a shell
-            Process process = rtime.exec("/bin/bash");
+            Process process;
+            if(SystemUtils.IS_OS_WINDOWS){
+            	process = rtime.exec("cmd");
+            }else{
+            	process = rtime.exec("/bin/bash");
+            }
             //get an output stream to write to the shell
             pw = new PrintWriter(
                     new OutputStreamWriter(process.getOutputStream()));
@@ -854,7 +891,12 @@ public class HTKLabeler extends VoiceImportComponent {
 
                 Runtime rtime = Runtime.getRuntime();
                 //get a shell
-                Process process = rtime.exec("/bin/bash");
+                Process process;
+                if(SystemUtils.IS_OS_WINDOWS){
+                	process = rtime.exec("cmd");
+                }else{
+                	process = rtime.exec("/bin/bash");
+                }
                 //get an output stream to write to the shell
                 PrintWriter pw = new PrintWriter(
                         new OutputStreamWriter(process.getOutputStream()));
@@ -1428,7 +1470,12 @@ public class HTKLabeler extends VoiceImportComponent {
             
             Runtime rtime = Runtime.getRuntime();
             //get a shell
-            Process process = rtime.exec("/bin/bash");
+            Process process;
+            if(SystemUtils.IS_OS_WINDOWS){
+            	process = rtime.exec("cmd");
+            }else{
+            	process = rtime.exec("/bin/bash");
+            }
             //get an output stream to write to the shell
             
             //when no sp use (-m)!
@@ -1492,7 +1539,12 @@ public class HTKLabeler extends VoiceImportComponent {
     
             Runtime rtime = Runtime.getRuntime();
             //get a shell
-            Process process = rtime.exec("/bin/bash");
+            Process process;
+            if(SystemUtils.IS_OS_WINDOWS){
+            	process = rtime.exec("cmd");
+            }else{
+            	process = rtime.exec("/bin/bash");
+            }
             //get an output stream to write to the shell
             PrintWriter pw = new PrintWriter(
                     new OutputStreamWriter(process.getOutputStream()));
@@ -1535,7 +1587,11 @@ public class HTKLabeler extends VoiceImportComponent {
             
             rtime = Runtime.getRuntime();
             //get a shell
-            process = rtime.exec("/bin/bash");
+            if(SystemUtils.IS_OS_WINDOWS){
+            	process = rtime.exec("cmd");
+            }else{
+            	process = rtime.exec("/bin/bash");
+            }
             //get an output stream to write to the shell
             pw = new PrintWriter(
                     new OutputStreamWriter(process.getOutputStream()));
