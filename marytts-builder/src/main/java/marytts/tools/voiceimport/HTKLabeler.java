@@ -280,34 +280,11 @@ public class HTKLabeler extends VoiceImportComponent {
      * @throws MaryConfigurationException 
         */
         private void setup() throws IOException,InterruptedException, MaryConfigurationException{
-            
-            htk.mkdir();
-            File lab = new File(htk.getAbsolutePath()+"/lab");
-            //call setup of HTK in this directory
-            Runtime rtime = Runtime.getRuntime();
-            //get a shell
-            Process process = rtime.exec("/bin/bash");
-            //get an output stream to write to the shell
-            PrintWriter pw = new PrintWriter(
-                    new OutputStreamWriter(process.getOutputStream()));
-            //go to htk directory and setup Directory Structure 
-            pw.print("( cd "+htk.getAbsolutePath()
-                    +"; mkdir -p hmm"
-                    +"; mkdir -p etc"
-                    +"; mkdir -p feat"
-                    +"; mkdir -p config"
-                    +"; mkdir -p lab"
-                    +"; exit )\n");
-            pw.flush();
-            //shut down
-            pw.close();
-            process.waitFor();
-             // check exit value
-            if (process.exitValue() != 0) {
-                BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-                throw new MaryConfigurationException(errorReader.readLine());
+            org.apache.commons.io.FileUtils.forceMkdir(htk);
+            for (String dirName: new String[] {"hmm", "etc", "feat", "config", "lab"}) {
+            	File dir = new File(htk, dirName);
+            	org.apache.commons.io.FileUtils.forceMkdir(dir);
             }
-            
         }
        
 
