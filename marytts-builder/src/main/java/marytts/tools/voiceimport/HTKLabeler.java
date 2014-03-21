@@ -53,6 +53,7 @@ import marytts.modules.phonemiser.Allophone;
 import marytts.modules.phonemiser.AllophoneSet;
 import marytts.util.io.FileUtils;
 
+import org.apache.commons.lang.SystemUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -193,7 +194,12 @@ public class HTKLabeler extends VoiceImportComponent {
          */
         public boolean compute() throws Exception{
             
-            File htkFile = new File(getProp(HTKDIR)+File.separator+"HInit");
+            String htkFileName = "HInit";
+            if(SystemUtils.IS_OS_WINDOWS){
+            	htkFileName += ".exe";
+            }
+            File htkFile = new File(getProp(HTKDIR)+File.separator+htkFileName);
+
             if (!htkFile.exists()) {
                 throw new IOException("HTK path setting is wrong. Because file "+htkFile.getAbsolutePath()+" does not exist");
             }
