@@ -860,7 +860,7 @@ public class HTKLabeler extends VoiceImportComponent {
 
 		script = "mkdir hmm/hmm0\n"
 				+ "head -3 hmm/hmm-dummy/htk > hmm/hmm0/hmmdefs\n"
-				+ "sudo for s in `cat etc/htk.phone.list`\n"
+				+ "for s in `cat etc/htk.phone.list`\n"
 				+ "do\n"
 				+ "echo \"~h \\\"$s\\\"\" >> hmm/hmm0/hmmdefs\n"
 				+ getProp(AWK)
@@ -882,14 +882,11 @@ public class HTKLabeler extends VoiceImportComponent {
 		// get an output stream to write to the shell
 		pw = new PrintWriter(new OutputStreamWriter(process.getOutputStream()));
 
-		String prefix = "" + getProp(HTDIR).charAt(0) + ""
-				+ getProp(HTDIR).charAt(1);
-
 		System.out.println("hallo");
-			System.out.println("( " + prefix + "; cd " + getProp(HTDIR)
+			System.out.println("( cd " + getProp(HTDIR)
 					+ "; sh etc" + File.separator + "htkTrainScript.sh"
 					+ " > log_htkTrainScript.txt" + "; exit )\n");
-			pw.print("( " + prefix + "; cd " + getProp(HTDIR) + "; sh etc"
+			pw.print("( cd " + getProp(HTDIR) + "; sh etc"
 					+ File.separator + "htkTrainScript.sh"
 					+ " > log_htkTrainScript.txt" + "; exit )\n");
 
