@@ -132,6 +132,7 @@
 		<module>marytts-builder</module>
 		<module>marytts-redstart</module>
 		<module>marytts-transcription</module>
+		<module>marytts-lang-cs</module>
 		<module>marytts-lang-de</module>
 		<module>marytts-lang-en</module>
 		<module>marytts-lang-te</module>
