@@ -11,6 +11,13 @@
 	<artifactId>marytts-lang-cs</artifactId>
 	<name>${project.artifactId}</name>
 
+	<developers>
+		<developer>
+			<name>Tomáš Beněk</name>
+			<id>pyro366</id>
+		</developer>
+	</developers>
+
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
