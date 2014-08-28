@@ -335,8 +335,11 @@ public class MaryDataType
      */
     public static MaryDataType get(String name)
     {
-        if (!registrationComplete)
-            throw new IllegalStateException("Cannot inquire about data types while registration is ongoing");
+        if (!registrationComplete) {
+        	String message = "Cannot inquire about data types while registration is ongoing";
+        	logger.error(message);
+            throw new IllegalStateException(message);
+        }
         return dataTypesByName.get(name);
     }
 
