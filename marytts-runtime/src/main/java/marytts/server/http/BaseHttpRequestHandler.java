@@ -49,7 +49,6 @@ import marytts.util.MaryRuntimeUtils;
 import marytts.util.MaryUtils;
 import marytts.util.http.Address;
 import marytts.util.string.StringUtils;
-import marytts.vocalizations.VocalizationSynthesizer;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntityEnclosingRequest;

@@ -186,20 +186,6 @@ public class InfoRequestHandler extends BaseHttpRequestHandler {
 			}
 		});
 
-		methodsMapping.put("vocalizations", new CorrectMethod() {
-			@Override
-			public String callCorrectMethod(Map<String, String> queryItems, HttpResponse response) {
-				if (queryItems != null) {
-					String voice = queryItems.get("voice");
-					if (voice != null) {
-						return MaryRuntimeUtils.getVocalizations(voice);
-					}
-				}
-				MaryHttpServerUtils.errorMissingQueryParameter(response, "'voice'");
-				return null;
-			}
-		});
-
 		methodsMapping.put("styles", new CorrectMethod() {
 			@Override
 			public String callCorrectMethod(Map<String, String> queryItems, HttpResponse response) {

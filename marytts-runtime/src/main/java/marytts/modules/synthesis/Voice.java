@@ -74,7 +74,6 @@ import marytts.unitselection.interpolation.InterpolatingSynthesizer;
 import marytts.unitselection.interpolation.InterpolatingVoice;
 import marytts.util.MaryRuntimeUtils;
 import marytts.util.MaryUtils;
-import marytts.vocalizations.VocalizationSynthesizer;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
@@ -154,7 +153,6 @@ public class Voice {
 	private Vector<MaryModule> preferredModules;
 	private Lexicon lexicon;
 	private boolean vocalizationSupport;
-	private VocalizationSynthesizer vocalizationSynthesizer;
 	protected DirectedGraph durationGraph;
 	protected DirectedGraph f0Graph;
 	protected FeatureFileReader f0ContourFeatures;
@@ -229,10 +227,6 @@ public class Voice {
 		String lexiconClass = MaryProperties.getProperty(header + ".lexiconClass");
 		String lexiconName = MaryProperties.getProperty(header + ".lexicon");
 		lexicon = getLexicon(lexiconClass, lexiconName);
-		vocalizationSupport = MaryProperties.getBoolean(header + ".vocalizationSupport", false);
-		if (vocalizationSupport) {
-			vocalizationSynthesizer = new VocalizationSynthesizer(this);
-		}
 
 		loadOldStyleProsodyModels(header);
 		loadAcousticModels(header);
@@ -511,10 +505,6 @@ public class Voice {
 
 	public boolean hasVocalizationSupport() {
 		return vocalizationSupport;
-	}
-
-	public VocalizationSynthesizer getVocalizationSynthesizer() {
-		return vocalizationSynthesizer;
 	}
 
 	/**
