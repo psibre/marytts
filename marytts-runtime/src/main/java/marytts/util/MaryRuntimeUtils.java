@@ -25,10 +25,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -59,15 +64,21 @@ import marytts.vocalizations.VocalizationSynthesizer;
 
 import org.w3c.dom.Element;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 /**
  * @author marc
  *
  */
 public class MaryRuntimeUtils {
+	private static final String FILENAME = "MaryRuntimeUtils.java:";
 
 	public static void ensureMaryStarted() throws Exception {
 		synchronized (MaryConfig.getMainConfig()) {
+			// System.out.println("in ensureMaryStarted()");
 			if (Mary.currentState() == Mary.STATE_OFF) {
+				System.out.println("Mary's current state is off. Starting it!");
 				Mary.startup();
 			}
 		}
@@ -131,8 +142,9 @@ public class MaryRuntimeUtils {
 			}
 		} catch (Exception e) {
 			// try to make e's message more informative if possible
-			throw new MaryConfigurationException("Cannot instantiate object from '" + objectInitInfo + "': "
-					+ MaryUtils.getFirstMeaningfulMessage(e), e);
+			throw new MaryConfigurationException(FILENAME + "Cannot instantiate object from '" + objectInitInfo + "': "
+					+ MaryUtils.getFirstMeaningfulMessage(e) + "\tCause: "
+					+ (e.getCause() != null ? e.getCause().getMessage() : "Cause is null!"), e);
 		}
 		return obj;
 	}
@@ -311,7 +323,7 @@ public class MaryRuntimeUtils {
 	public static AllophoneSet needAllophoneSet(String propertyName) throws MaryConfigurationException {
 		String propertyValue = MaryProperties.getProperty(propertyName);
 		if (propertyValue == null) {
-			throw new MaryConfigurationException("No such property: " + propertyName);
+			throw new MaryConfigurationException(FILENAME + " No such property: " + propertyName);
 		}
 		if (AllophoneSet.hasAllophoneSet(propertyValue)) {
 			return AllophoneSet.getAllophoneSetById(propertyValue);
@@ -320,7 +332,8 @@ public class MaryRuntimeUtils {
 		try {
 			alloStream = MaryProperties.needStream(propertyName);
 		} catch (FileNotFoundException e) {
-			throw new MaryConfigurationException("Cannot open allophone stream for property " + propertyName, e);
+			throw new MaryConfigurationException(FILENAME + " Cannot open allophone stream for property " + propertyName
+					+ "\tCause: " + (e.getCause() != null ? e.getCause().getMessage() : "Cause is null!"), e);
 		}
 		assert alloStream != null;
 		return AllophoneSet.getAllophoneSet(alloStream, propertyValue);
@@ -360,31 +373,68 @@ public class MaryRuntimeUtils {
 		return out.toString();
 	}
 
-	public static String getVoices() {
-		String output = "";
-		Collection<Voice> voices = Voice.getAvailableVoices();
+	public static String getVoices(Map<String, String> queryParameters) {
+		String outputString = "";
+		List<Voice> voices;
+
+		if (queryParameters == null || queryParameters.size() == 0) {
+			voices = new ArrayList<Voice>(Voice.getAvailableVoices());
+		} else {
+			voices = new ArrayList<Voice>(Voice.getAvailableVoices(queryParameters));
+		}
+
+		sortVoicesList(voices); // sort voices by: locale + gender + name + type
+		outputString = formJSONFromVoices(voices);
+		return outputString;
+	}
+
+	// /sort by: locale + gender + name + type
+	public static void sortVoicesList(List<Voice> voices) {
+		Collections.sort(voices, new Comparator<Voice>() {
+			@Override
+			public int compare(Voice v1, Voice v2) {
+				return (v1.getLocale().toString() + " " + v1.gender().toString() + " " + v1.getName() + " " + (v1 instanceof UnitSelectionVoice ? "u"
+						: "h")).compareToIgnoreCase(v2.getLocale().toString() + " " + v2.gender().toString() + " " + v2.getName()
+						+ " " + (v2 instanceof UnitSelectionVoice ? "u" : "h"));
+			}
+		});
+	}
+
+	public static String formJSONFromVoices(Collection<Voice> voices) {
+		JsonArray outputJson = new JsonArray();
+
 		for (Iterator<Voice> it = voices.iterator(); it.hasNext();) {
+			JsonObject currentVoice = new JsonObject();
 			Voice v = (Voice) it.next();
 			if (v instanceof InterpolatingVoice) {
 				// do not list interpolating voice
 			} else if (v instanceof UnitSelectionVoice) {
-				output += v.getName() + " " + v.getLocale() + " " + v.gender().toString() + " " + "unitselection" + " "
-						+ ((UnitSelectionVoice) v).getDomain() + System.getProperty("line.separator");
+				currentVoice.addProperty("name", v.getName());
+				currentVoice.addProperty("locale", v.getLocale().toString());
+				currentVoice.addProperty("gender", v.gender().toString());
+				currentVoice.addProperty("type", "unitselection");
+				currentVoice.addProperty("domain", ((UnitSelectionVoice) v).getDomain());
 			} else if (v instanceof HMMVoice) {
-				output += v.getName() + " " + v.getLocale() + " " + v.gender().toString() + " " + "hmm"
-						+ System.getProperty("line.separator");
+				currentVoice.addProperty("name", v.getName());
+				currentVoice.addProperty("locale", v.getLocale().toString());
+				currentVoice.addProperty("gender", v.gender().toString());
+				currentVoice.addProperty("type", "hmm");
 			} else {
-				output += v.getName() + " " + v.getLocale() + " " + v.gender().toString() + " " + "other"
-						+ System.getProperty("line.separator");
+				currentVoice.addProperty("name", v.getName());
+				currentVoice.addProperty("locale", v.getLocale().toString());
+				currentVoice.addProperty("gender", v.gender().toString());
+				currentVoice.addProperty("type", "other");
 			}
+
+			outputJson.add(currentVoice);
 		}
 
-		return output;
+		return outputJson.toString();
 	}
 
 	public static String getDefaultVoiceName() {
 		String defaultVoiceName = "";
-		String allVoices = getVoices();
+		String allVoices = getVoices(new HashMap<String, String>());
 		if (allVoices != null && allVoices.length() > 0) {
 			StringTokenizer tt = new StringTokenizer(allVoices, System.getProperty("line.separator"));
 			if (tt.hasMoreTokens()) {
@@ -510,5 +560,4 @@ public class MaryRuntimeUtils {
 		}
 		return effect.isHMMEffect() ? "yes" : "no";
 	}
-
 }

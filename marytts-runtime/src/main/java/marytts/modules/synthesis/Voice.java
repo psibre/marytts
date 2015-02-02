@@ -42,6 +42,7 @@ import java.util.Vector;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
+import javax.swing.Box.Filler;
 
 import marytts.cart.DirectedGraph;
 import marytts.cart.io.DirectedGraphReader;
@@ -55,6 +56,7 @@ import marytts.exceptions.NoSuchPropertyException;
 import marytts.exceptions.SynthesisException;
 import marytts.features.FeatureProcessorManager;
 import marytts.features.FeatureRegistry;
+import marytts.htsengine.HMMVoice;
 import marytts.modules.MaryModule;
 import marytts.modules.ModuleRegistry;
 import marytts.modules.acoustic.BoundaryModel;
@@ -66,6 +68,7 @@ import marytts.modules.acoustic.SoPModel;
 import marytts.modules.phonemiser.Allophone;
 import marytts.modules.phonemiser.AllophoneSet;
 import marytts.server.MaryProperties;
+import marytts.unitselection.UnitSelectionVoice;
 import marytts.unitselection.data.FeatureFileReader;
 import marytts.unitselection.interpolation.InterpolatingSynthesizer;
 import marytts.unitselection.interpolation.InterpolatingVoice;
@@ -135,6 +138,8 @@ public class Voice {
 
 	protected static Logger logger = MaryUtils.getLogger("Voice");
 
+	private static final String FILENAME = "Voice.java:";
+
 	/** A local map of already-instantiated Lexicons */
 	private static Map<String, Lexicon> lexicons = new HashMap<String, Lexicon>();
 
@@ -167,7 +172,8 @@ public class Voice {
 		try {
 			init();
 		} catch (Exception n) {
-			throw new MaryConfigurationException("Cannot instantiate voice '" + voiceName + "'", n);
+			throw new MaryConfigurationException(FILENAME + " Cannot instantiate voice '" + voiceName + "'" + "\tCause: "
+					+ (n.getCause() != null ? n.getCause().getMessage() : "Cause is null!"), n);
 		}
 	}
 
@@ -176,7 +182,8 @@ public class Voice {
 		this.synthesizer = synthesizer;
 		VoiceConfig config = MaryConfig.getVoiceConfig(voiceName);
 		if (config == null) {
-			throw new MaryConfigurationException("Trying to load config for voice '" + voiceName + "' but cannot find it.");
+			throw new MaryConfigurationException(FILENAME + " Trying to load config for voice '" + voiceName
+					+ "' but cannot find it.");
 		}
 		this.locale = config.getLocale();
 		int samplingRate = MaryProperties.getInteger("voice." + voiceName + ".samplingRate", 16000);
@@ -192,7 +199,8 @@ public class Voice {
 		try {
 			init();
 		} catch (Exception n) {
-			throw new MaryConfigurationException("Cannot instantiate voice '" + voiceName + "'", n);
+			throw new MaryConfigurationException(FILENAME + " Cannot instantiate voice '" + voiceName + "'\tCause: "
+					+ (n.getCause() != null ? n.getCause().getMessage() : "Cause is null!"), n);
 		}
 	}
 
@@ -211,8 +219,9 @@ public class Voice {
 			try {
 				allophoneSet = MaryRuntimeUtils.needAllophoneSet(MaryProperties.localePrefix(getLocale()) + ".allophoneset");
 			} catch (MaryConfigurationException e2) {
-				throw new MaryConfigurationException("No allophone set specified -- neither for voice '" + getName()
-						+ "' nor for locale '" + getLocale() + "'", e2);
+				throw new MaryConfigurationException(FILENAME + " No allophone set specified -- neither for voice '" + getName()
+						+ "' nor for locale '" + getLocale() + "'" + "\tCause: "
+						+ (e2.getCause() != null ? e2.getCause().getMessage() : "Cause is null!"), e2);
 			}
 		}
 		preferredModulesClasses = MaryProperties.getProperty(header + ".preferredModules");
@@ -241,7 +250,8 @@ public class Voice {
 			try {
 				durationGraph = (new DirectedGraphReader()).load(durationGraphFile);
 			} catch (IOException e) {
-				throw new MaryConfigurationException("Cannot load duration graph file '" + durationGraphFile + "'", e);
+				throw new MaryConfigurationException(FILENAME + " Cannot load duration graph file '" + durationGraphFile + "'"
+						+ "\tCause: " + (e.getCause() != null ? e.getCause().getMessage() : "Cause is null!"), e);
 			}
 		}
 
@@ -255,7 +265,8 @@ public class Voice {
 				String f0ContourFile = MaryProperties.needFilename(header + ".f0.contours");
 				f0ContourFeatures = new FeatureFileReader(f0ContourFile);
 			} catch (IOException e) {
-				throw new MaryConfigurationException("Cannot load f0 contour graph file '" + f0GraphFile + "'", e);
+				throw new MaryConfigurationException(FILENAME + " Cannot load f0 contour graph file '" + f0GraphFile + "'"
+						+ "\tCause: " + (e.getCause() != null ? e.getCause().getMessage() : "Cause is null!"), e);
 			}
 		}
 	}
@@ -301,7 +312,7 @@ public class Voice {
 				ModelType possibleModelTypes = ModelType.fromString(modelType);
 				// if modelType is not in ModelType.values(), we don't know how to handle it:
 				if (possibleModelTypes == null) {
-					throw new MaryConfigurationException("Cannot handle unknown model type: " + modelType);
+					throw new MaryConfigurationException(FILENAME + " Cannot handle unknown model type: " + modelType);
 				}
 
 				// ...and instantiate it in a switch statement:
@@ -337,8 +348,9 @@ public class Voice {
 						break;
 					}
 				} catch (Throwable t) {
-					throw new MaryConfigurationException("Cannot instantiate model '" + modelName + "' of type '" + modelType
-							+ "' from '" + MaryProperties.getProperty(header + "." + modelName + ".data") + "'", t);
+					throw new MaryConfigurationException(FILENAME + " Cannot instantiate model '" + modelName + "' of type '"
+							+ modelType + "' from '" + MaryProperties.getProperty(header + "." + modelName + ".data") + "'"
+							+ "\tCause: " + (t.getCause() != null ? t.getCause().getMessage() : "Cause is null!"), t);
 				}
 
 				// if we got this far, model should not be null:
@@ -368,8 +380,9 @@ public class Voice {
 			try {
 				featMgr = (FeatureProcessorManager) Class.forName(featMgrClass).newInstance();
 			} catch (Exception e) {
-				throw new MaryConfigurationException("Cannot initialise voice-specific FeatureProcessorManager " + featMgrClass
-						+ " from config file", e);
+				throw new MaryConfigurationException(FILENAME + " Cannot initialise voice-specific FeatureProcessorManager "
+						+ featMgrClass + " from config file" + "\tCause: "
+						+ (e.getCause() != null ? e.getCause().getMessage() : "Cause is null!"), e);
 			}
 		} else if (getOtherModels() != null) {
 			// Only if there is no feature manager setting in the config file,
@@ -383,10 +396,13 @@ public class Voice {
 				Constructor<? extends FeatureProcessorManager> fpmVoiceConstructor = fpmClass.getConstructor(Voice.class);
 				featMgr = fpmVoiceConstructor.newInstance(this);
 			} catch (NoSuchMethodException nsme) {
-				throw new MaryConfigurationException("Cannot initialise voice-specific FeatureProcessorManager: Class "
-						+ fpmClass.getName() + " has no constructor " + fpmClass.getSimpleName() + "(Voice)");
+				throw new MaryConfigurationException(FILENAME
+						+ " Cannot initialise voice-specific FeatureProcessorManager: Class " + fpmClass.getName()
+						+ " has no constructor " + fpmClass.getSimpleName() + "(Voice)" + "\tCause: "
+						+ (nsme.getCause() != null ? nsme.getCause().getMessage() : "Cause is null!"));
 			} catch (Exception e) {
-				throw new MaryConfigurationException("Cannot initialise voice-specific FeatureProcessorManager", e);
+				throw new MaryConfigurationException(FILENAME + " Cannot initialise voice-specific FeatureProcessorManager"
+						+ "\tCause: " + (e.getCause() != null ? e.getCause().getMessage() : "Cause is null!"), e);
 			}
 		}
 		// register the FeatureProcessorManager for this Voice:
@@ -408,10 +424,8 @@ public class Voice {
 	 * Get the Allophone set for the given phone symbol.
 	 * 
 	 * @param phoneSymbol
-	 * @return an Allophone object if phoneSymbol is a known phone symbol in the voice's AllophoneSet.
-	 * @deprecated use {@link AllophoneSet#getAllophone(String)} directly instead
+	 * @return an Allophone object if phoneSymbol is a known phone symbol in the voice's AllophoneSet, or null.
 	 */
-	@Deprecated
 	public Allophone getAllophone(String phoneSymbol) {
 		return allophoneSet.getAllophone(phoneSymbol);
 	}
@@ -461,6 +475,10 @@ public class Voice {
 
 	public boolean hasName(String aName) {
 		return voiceName.equals(aName);
+	}
+
+	public boolean hasNameIgnoreCase(String aName) {
+		return voiceName.equalsIgnoreCase(aName);
 	}
 
 	/**
@@ -621,7 +639,7 @@ public class Voice {
 	 */
 	public static void registerVoice(Voice voice) {
 		if (voice == null)
-			throw new NullPointerException("Cannot register null voice.");
+			throw new NullPointerException(FILENAME + " Cannot register null voice.");
 		if (!allVoices.contains(voice)) {
 			logger.info("Registering voice `" + voice.getName() + "': " + voice.gender() + ", locale " + voice.getLocale());
 			allVoices.add(voice);
@@ -691,7 +709,79 @@ public class Voice {
 	 * their "wantToBeDefault" value.
 	 */
 	public static Collection<Voice> getAvailableVoices() {
+		// if (allVoices == null || allVoices.size() == 0)
+		// {
+		// fillVoices();
+		// }
 		return Collections.unmodifiableSet(allVoices);
+	}
+
+	public static List<Voice> getFilteredVoice(String queryVariable, String queryValue, Collection<Voice> initialList) {
+		List<Voice> filteredList = new ArrayList<Voice>();
+
+		switch (queryVariable.toLowerCase()) {
+		case "locale":
+			Locale queryLocale = MaryUtils.string2locale(queryValue);
+			for (Voice currentVoice : initialList) {
+				if (MaryUtils.subsumes(queryLocale, currentVoice.getLocale())) {
+					filteredList.add(currentVoice);
+				}
+			}
+			break;
+
+		case "name":
+			for (Voice currentVoice : initialList) {
+				if (currentVoice.hasNameIgnoreCase(queryValue)) {
+					filteredList.add(currentVoice);
+				}
+			}
+			break;
+
+		case "gender":
+			for (Voice currentVoice : initialList) {
+				if (currentVoice.gender().name.equalsIgnoreCase(queryValue)) {
+					filteredList.add(currentVoice);
+				}
+			}
+			break;
+
+		case "type":
+			for (Voice currentVoice : initialList) {
+				boolean isQualified = false;
+				if (queryValue.toLowerCase().contains("unit") && currentVoice instanceof UnitSelectionVoice) {
+					isQualified = true;
+				} else if (queryValue.toLowerCase().contains("hmm") && currentVoice instanceof HMMVoice) {
+					isQualified = true;
+				}
+
+				if (isQualified) {
+					filteredList.add(currentVoice);
+				}
+			}
+			break;
+
+		default:
+			break;
+		}
+
+		return filteredList;
+	}
+
+	public static Collection<Voice> getAvailableVoices(final Map<String, String> queryParameters) {
+		List<Voice> filteredVoices = new ArrayList<Voice>();
+
+		int index = 0;
+		for (String key : queryParameters.keySet()) {
+			if (index == 0) {
+				filteredVoices = getFilteredVoice(key, queryParameters.get(key), allVoices);
+			} else {
+				filteredVoices = getFilteredVoice(key, queryParameters.get(key), filteredVoices);
+			}
+
+			index++;
+		}
+
+		return filteredVoices;
 	}
 
 	/**
@@ -719,7 +809,7 @@ public class Voice {
 	 */
 	public static Collection<Voice> getAvailableVoices(WaveformSynthesizer synth) {
 		if (synth == null) {
-			throw new NullPointerException("Got null WaveformSynthesizer");
+			throw new NullPointerException(FILENAME + " Got null WaveformSynthesizer");
 		}
 		ArrayList<Voice> list = new ArrayList<Voice>();
 		for (Voice v : allVoices) {
@@ -787,7 +877,7 @@ public class Voice {
 		if (v == null)
 			v = getVoice(locale, MALE);
 		if (v == null)
-			logger.debug("Could not find default voice for locale " + locale);
+			logger.warn("Could not find default voice for locale " + locale);
 		return v;
 	}
 
@@ -890,4 +980,11 @@ public class Voice {
 		}
 	}
 
+	public void setVoiceName(String voiceName) {
+		this.voiceName = voiceName;
+	}
+
+	public void setLocale(Locale locale) {
+		this.locale = locale;
+	}
 }
