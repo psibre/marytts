@@ -28,7 +28,6 @@ import java.util.Map;
 import marytts.exceptions.NoSuchPropertyException;
 import marytts.modules.DummyFreeTTSVoice;
 import marytts.server.MaryProperties;
-import marytts.unitselection.UnitSelectionVoice;
 import marytts.util.MaryUtils;
 
 import org.apache.log4j.Logger;
@@ -124,31 +123,6 @@ public class FreeTTSVoices {
 			freeTTSVoice = new DummyFreeTTSVoice(maryVoice, null);
 		}
 		return freeTTSVoice;
-	}
-
-	/**
-	 * Depending on the maryVoice and its locale, associate an existing or create a new lexicon.
-	 * 
-	 * @param maryVoice
-	 * @return a Lexicon; if it was freshly created, it is not yet loaded.
-	 */
-	@Deprecated
-	private static Lexicon getLexicon(Voice maryVoice) {
-		if (maryVoice instanceof UnitSelectionVoice) {
-			return ((UnitSelectionVoice) maryVoice).getLexicon();
-		}
-		if (maryVoice.getLocale() == null) {
-			return null;
-		} else if (maryVoice.getLocale().equals(Locale.US)) {
-			if (usenLexicon == null)
-				usenLexicon = new CMULexicon("cmudict04");
-			return usenLexicon;
-		} else if (maryVoice.getLocale().equals(Locale.GERMAN)) {
-			if (deLexicon == null)
-				deLexicon = new GermanLexicon();
-			return deLexicon;
-		}
-		return null;
 	}
 
 	/**
