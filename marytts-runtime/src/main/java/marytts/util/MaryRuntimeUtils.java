@@ -55,7 +55,6 @@ import marytts.server.MaryProperties;
 import marytts.signalproc.effects.AudioEffect;
 import marytts.signalproc.effects.AudioEffects;
 import marytts.unitselection.UnitSelectionVoice;
-import marytts.unitselection.interpolation.InterpolatingVoice;
 import marytts.util.data.audio.AudioDestination;
 import marytts.util.data.audio.MaryAudioUtils;
 import marytts.util.dom.MaryDomUtils;
@@ -405,9 +404,7 @@ public class MaryRuntimeUtils {
 		for (Iterator<Voice> it = voices.iterator(); it.hasNext();) {
 			JsonObject currentVoice = new JsonObject();
 			Voice v = (Voice) it.next();
-			if (v instanceof InterpolatingVoice) {
-				// do not list interpolating voice
-			} else if (v instanceof UnitSelectionVoice) {
+			if (v instanceof UnitSelectionVoice) {
 				currentVoice.addProperty("name", v.getName());
 				currentVoice.addProperty("locale", v.getLocale().toString());
 				currentVoice.addProperty("gender", v.gender().toString());
