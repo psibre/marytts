@@ -145,6 +145,8 @@ public class Voice {
 	private AudioFormat dbAudioFormat = null;
 	private WaveformSynthesizer synthesizer;
 	private Gender gender;
+	protected String domain;
+	protected String exampleText;
 	private int wantToBeDefault;
 	private AllophoneSet allophoneSet;
 	String preferredModulesClasses;
@@ -191,7 +193,20 @@ public class Voice {
 				false);
 
 		this.gender = new Gender(MaryProperties.needProperty("voice." + voiceName + ".gender"));
-
+		
+		//taken from UnitSeletionVoice
+		String header = "voice." + name;
+		this.domain = MaryProperties.getProperty(header + ".domain");
+		InputStream exampleTextStream = null;
+		try {
+			exampleTextStream = MaryProperties.getStream(header + ".exampleTextFile");
+			if (exampleTextStream != null) {
+				readExampleText(exampleTextStream);
+			}
+		} catch (Exception ex) {
+			throw new MaryConfigurationException("No .exampleTextFile found", ex);
+		}
+		
 		try {
 			init();
 		} catch (Exception n) {
@@ -534,6 +549,15 @@ public class Voice {
 	 */
 	public Lexicon getLexicon() {
 		return lexicon;
+	}
+	
+	/**
+	 * Gets the domain of this voice
+	 * 
+	 * @return the domain
+	 */
+	public String getDomain() {
+		return domain;
 	}
 
 	public DirectedGraph getDurationGraph() {
@@ -929,6 +953,31 @@ public class Voice {
 		}
 		lexicons.put(lexiconClass + lexiconName, lexicon);
 		return lexicon;
+	}
+	
+	public void readExampleText(InputStream in) throws IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+		StringBuilder sb = new StringBuilder();
+		String line = reader.readLine();
+		while (line != null) {
+			if (!line.startsWith("***")) {
+				sb.append(line + "\n");
+			}
+			line = reader.readLine();
+		}
+		this.exampleText = sb.toString();
+	}
+	
+	public String getExampleText() {
+		if (exampleText == null) {
+			return "";
+		} else {
+			return exampleText;
+		}
+	}
+	
+	public boolean isUnitSelection() {
+		return MaryRuntimeUtils.getVoicesList("unitselection").contains(this.getName());
 	}
 
 	public static class Gender {
