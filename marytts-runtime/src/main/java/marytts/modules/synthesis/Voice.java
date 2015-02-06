@@ -69,7 +69,6 @@ import marytts.modules.acoustic.SoPModel;
 import marytts.modules.phonemiser.Allophone;
 import marytts.modules.phonemiser.AllophoneSet;
 import marytts.server.MaryProperties;
-import marytts.unitselection.UnitSelectionVoice;
 import marytts.util.MaryRuntimeUtils;
 import marytts.util.MaryUtils;
 
@@ -709,7 +708,7 @@ public class Voice {
 
 	public static List<Voice> getFilteredVoice(String queryVariable, String queryValue, Collection<Voice> initialList) {
 		List<Voice> filteredList = new ArrayList<Voice>();
-
+		
 		switch (queryVariable.toLowerCase()) {
 		case "locale":
 			Locale queryLocale = MaryUtils.string2locale(queryValue);
@@ -739,7 +738,8 @@ public class Voice {
 		case "type":
 			for (Voice currentVoice : initialList) {
 				boolean isQualified = false;
-				if (queryValue.toLowerCase().contains("unit") && currentVoice instanceof UnitSelectionVoice) {
+				//if (queryValue.toLowerCase().contains("unit") && currentVoice instanceof UnitSelectionVoice) {
+				if (queryValue.toLowerCase().contains("unit") && currentVoice.isUnitSelection()) {
 					isQualified = true;
 				} else if (queryValue.toLowerCase().contains("hmm") && currentVoice instanceof HMMVoice) {
 					isQualified = true;

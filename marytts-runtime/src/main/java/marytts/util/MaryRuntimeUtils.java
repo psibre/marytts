@@ -54,7 +54,6 @@ import marytts.server.Mary;
 import marytts.server.MaryProperties;
 import marytts.signalproc.effects.AudioEffect;
 import marytts.signalproc.effects.AudioEffects;
-import marytts.unitselection.UnitSelectionVoice;
 import marytts.util.data.audio.AudioDestination;
 import marytts.util.data.audio.MaryAudioUtils;
 import marytts.util.dom.MaryDomUtils;
@@ -391,9 +390,9 @@ public class MaryRuntimeUtils {
 		Collections.sort(voices, new Comparator<Voice>() {
 			@Override
 			public int compare(Voice v1, Voice v2) {
-				return (v1.getLocale().toString() + " " + v1.gender().toString() + " " + v1.getName() + " " + (v1 instanceof UnitSelectionVoice ? "u"
+				return (v1.getLocale().toString() + " " + v1.gender().toString() + " " + v1.getName() + " " + (v1.isUnitSelection() ? "u"
 						: "h")).compareToIgnoreCase(v2.getLocale().toString() + " " + v2.gender().toString() + " " + v2.getName()
-						+ " " + (v2 instanceof UnitSelectionVoice ? "u" : "h"));
+						+ " " + (v2.isUnitSelection() ? "u" : "h"));
 			}
 		});
 	}
@@ -404,12 +403,12 @@ public class MaryRuntimeUtils {
 		for (Iterator<Voice> it = voices.iterator(); it.hasNext();) {
 			JsonObject currentVoice = new JsonObject();
 			Voice v = (Voice) it.next();
-			if (v instanceof UnitSelectionVoice) {
+			if (v.isUnitSelection()) {
 				currentVoice.addProperty("name", v.getName());
 				currentVoice.addProperty("locale", v.getLocale().toString());
 				currentVoice.addProperty("gender", v.gender().toString());
 				currentVoice.addProperty("type", "unitselection");
-				currentVoice.addProperty("domain", ((UnitSelectionVoice) v).getDomain());
+				currentVoice.addProperty("domain", v.getDomain());
 			} else if (v instanceof HMMVoice) {
 				currentVoice.addProperty("name", v.getName());
 				currentVoice.addProperty("locale", v.getLocale().toString());
@@ -470,9 +469,7 @@ public class MaryRuntimeUtils {
 
 	public static String getVoiceExampleText(String voiceName) {
 		Voice v = Voice.getVoice(voiceName);
-		if (v instanceof marytts.unitselection.UnitSelectionVoice)
-			return ((marytts.unitselection.UnitSelectionVoice) v).getExampleText();
-		return "";
+		return v.getExampleText();
 	}
 
 	/**
@@ -536,5 +533,15 @@ public class MaryRuntimeUtils {
 			return "";
 		}
 		return effect.isHMMEffect() ? "yes" : "no";
+	}
+	/**
+	 * returns a list of strings of voice names, depending on voice type wanted
+	 * parameter passed-> a string such as "unitselection" or "hmm" 
+	 * @param voicetype
+	 * @return VoiceNames
+	 */
+	public static List<String> getVoicesList(String voicetype) {
+		List<String> VoiceNames = MaryProperties.getList(voicetype + ".voices.list");
+		return VoiceNames;
 	}
 }
