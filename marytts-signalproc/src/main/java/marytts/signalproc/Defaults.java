@@ -24,9 +24,9 @@ import marytts.signalproc.window.Window;
 /**
  * 
  * @author Marc Schr&ouml;der
- * 
+ *
  *         A set of static getters for System properties.
- * 
+ *
  */
 public class Defaults {
 	public static int getWindowSize() {
@@ -48,4 +48,7 @@ public class Defaults {
 		return shift;
 	}
 
+	public static String getDefaultEnglishLocale() {
+		return "en-US";
+	}
 }

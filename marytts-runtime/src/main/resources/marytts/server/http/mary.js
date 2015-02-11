@@ -66,10 +66,11 @@ function fillVoices()
         if (xmlHttp.readyState==4) {
         	if (xmlHttp.status == 200) {
 	            var response = xmlHttp.responseText;
+	            var jsonResponseArray = JSON.parse(xmlHttp.responseText);
 	            var lines = response.split('\n');
 	            var localeElt = document.getElementById('LOCALE');
 	            var voiceElt = document.getElementById('VOICE');
-	            for (l in lines) {
+	            /*for (l in lines) {
 	            	var line = lines[l];
 	            	if (line.length > 0) {
 		            	addOption("VOICE_SELECTIONS", line);
@@ -77,6 +78,21 @@ function fillVoices()
 							var items = line.split(' ', 2);
 							voiceElt.value = items[0];
 							localeElt.value = items[1];
+							updateInputText(true);
+							setModificationVisibility(null, "AUDIO"); // AUDIO is default on load
+		            	}
+	            	}
+	            }*/
+	            
+	            for (index in jsonResponseArray) {
+	            	var jsonObject = jsonResponseArray[index];
+	            	if (jsonObject != null) {
+	            		//format string that will be shown in the dropdown
+	            		var outputString = jsonObject.locale + " " + jsonObject.gender + " " + jsonObject.name + " " + jsonObject.type + "\r";
+		            	addOption("VOICE_SELECTIONS", outputString);
+		            	if (localeElt.value == 'fill-me') {
+							voiceElt.value = jsonObject.name;
+							localeElt.value = jsonObject.locale;
 							updateInputText(true);
 							setModificationVisibility(null, "AUDIO"); // AUDIO is default on load
 		            	}
@@ -333,7 +349,7 @@ function updateInputText(replaceInput)
 	        		if (haveVoiceExample) {
 	        			exampleChanged();
 	        		} else {
-	        			document.getElementById('INPUT_TEXT').value = typeExample;
+	        			document.getElementById('INPUT_TEXT').value = vkbeautify.xml(typeExample);
 	        		}
 	        	}
 	        }
@@ -637,7 +653,7 @@ function requestSynthesis()
 	    xmlHttp.onreadystatechange = function() {
 	        if (xmlHttp.readyState==4) {
 	        	if (xmlHttp.status == 200) {
-		            document.getElementById('OUTPUT_TEXT').value = xmlHttp.responseText;
+		            document.getElementById('OUTPUT_TEXT').value = vkbeautify.xml(xmlHttp.responseText);
 	        	} else {
 	        		alert(xmlHttp.responseText);
 	        	}
