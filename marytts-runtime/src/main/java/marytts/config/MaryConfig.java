@@ -71,6 +71,15 @@ public abstract class MaryConfig {
 						+ "', but there is no corresponding language config.");
 			}
 		}
+		// Check that for each synthesis config, we have a matching synthesis class
+		if (getSynthesisConfigs() == null){
+			throw new MaryConfigurationException("No synthesizer config");
+		}
+		for (SynthesisConfig sc : getSynthesisConfigs()) {
+			if (MaryProperties.synthesizerClasses().contains(sc.getSynthesisName())) {
+				throw new MaryConfigurationException("Synthesizer '" + sc.getSynthesisName() + "' is not in config properties.");
+			}
+		}
 	}
 
 	public static int countConfigs() {
@@ -143,6 +152,17 @@ public abstract class MaryConfig {
 			}
 		}
 		return null;
+	}
+
+	public static Iterable<SynthesisConfig> getSynthesisConfigs() {
+		Set<SynthesisConfig> scs = new HashSet<SynthesisConfig>();
+		for (MaryConfig mc : configLoader) {
+			if (mc.isSynthesisConfig()) {
+				SynthesisConfig sc = (SynthesisConfig) mc;
+				scs.add(sc);
+			}
+		}
+		return scs;
 	}
 
 	/**
