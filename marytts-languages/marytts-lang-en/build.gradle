@@ -1,0 +1,27 @@
+plugins {
+    id 'java'
+}
+
+processTestResources {
+    from 'lib/modules/en/us/lexicon/cmu'
+    include 'cmudict*.scm'
+}
+
+task convertArpaToSampa {
+    description 'convert SCM lexicon files to plain text, with a SAMPA phoneset instead of ARPAbet'
+    inputs.files processTestResources
+    def lexFile = file("$sourceSets.test.output.resourcesDir/en.txt")
+    outputs.files lexFile
+    doLast {
+        lexicon = [:]
+        inputs.files.each { inputFile ->
+            inputFile.eachLine { line ->
+            //MAGIC
+            lexicon[lemma] = transcription
+            }
+        }
+        lexFile.text = lexicon
+    }
+}
+
+test.dependsOn convertArpaToSampa
