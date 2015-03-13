@@ -1,24 +1,94 @@
+import java.util.StringTokenizer
+
+import marytts.modules.phonemiser.AllophoneSet
+
+
+buildscript {
+	repositories {
+		mavenLocal()
+	}
+	dependencies {
+		classpath 'de.dfki.mary:marytts-common:5.2-SNAPSHOT'
+	}
+
+}
 plugins {
-    id 'java'
+	id 'java'
 }
 
 processTestResources {
-    from 'lib/modules/en/us/lexicon/cmu'
-    include 'cmudict*.scm'
+    from 'lib/modules/en/us/lexicon'
+    include '*/cmudict*.scm'
+	include 'allophones.en_US.xml'
+    from 'lib/modules/en/synthesis'
+    include 'sampa2mrpa_en.map'
 }
 
-task convertArpaToSampa {
+
+def fillSampaMap(File mapFile) {
+	def mrpa2sampa = [:]	
+	mapFile.eachLine { line ->
+		def m = line =~ /([\w@=_{]+)<->(\w+)/
+		def sampa = m[0][1]
+		def mrpa = m[0][2]
+		if (sampa != null) {
+			mrpa2sampa.put(mrpa, sampa)
+		}
+	}
+	return mrpa2sampa
+}
+	
+def String mrpaString2sampaString(String mrpaString, AllophoneSet allophoneSet,Map merpa2sampaMap) {
+	StringTokenizer st = new StringTokenizer(mrpaString)
+	def sampaStrB = StringBuilder.newInstance()
+	while (st.hasMoreTokens()) {
+		String mrpa = st.nextToken()
+		String sampa
+		if (mrpa.endsWith("1")) {
+			sampa = mrpa2sampa(mrpa.substring(0, mrpa.length() - 1), merpa2sampaMap) + "1"
+		} else if (mrpa.endsWith("0")) {
+			sampa = mrpa2sampa(mrpa.substring(0, mrpa.length() - 1), merpa2sampaMap)
+		} else {
+			sampa = mrpa2sampa(mrpa, merpa2sampaMap)
+		}
+		sampaStrB << sampa
+	}
+	return allophoneSet.syllabify(sampaStrB.toString())
+}
+
+
+def mrpa2Sampa(String voicePhoneme, Map m2sMap) {
+	if (m2sMap.containsKey(voicePhoneme))
+		return m2sMap.get(voicePhoneme)
+	else
+		return voicePhoneme
+}
+
+
+task convertArpaToSampa() {
     description 'convert SCM lexicon files to plain text, with a SAMPA phoneset instead of ARPAbet'
     inputs.files processTestResources
     def lexFile = file("$sourceSets.test.output.resourcesDir/en.txt")
     outputs.files lexFile
     doLast {
+		inputs.files.each {File inputFile -> //this doesnt work???
+			if(!inputFile.name.contains(".map") || !inputFile.name.contains(".scm"))
+				assert inputFile.name.contains(".xml")
+				def allophoneSet = AllophoneSet.getAllophoneSet(inputFile.name)
+		}
+		def mrpa2sampaMap = fillSampaMap(inputs.files.getFiles.filter{"*.map"}.singleFile) //neither does this
         lexicon = [:]
-        inputs.files.each { inputFile ->
-            inputFile.eachLine { line ->
-            //MAGIC
-            lexicon[lemma] = transcription
-            }
+		def scmFiles = inputs.files.filter{include "*.scm"}
+        scmFiles.each {File inputFile ->
+			inputFile.eachLine { line ->
+				def m = line =~ /\(\"(\w+)\" \w+ \(([\w\s]+)\)\)/
+				def lemma = m[0][1]
+				def mrpaTranscription = m[0][2]
+				if (lemma != null) {
+					sampaTranscription = mrpaString2sampaString(mrpaTranscription, allophoneSet, mrpa2sampaMap)
+					lexicon[lemma] = sampaTranscription
+				}
+			}
         }
         lexFile.text = lexicon
     }
