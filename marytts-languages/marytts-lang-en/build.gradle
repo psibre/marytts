@@ -1,48 +1,37 @@
-buildscript {
-    repositories {
-        mavenLocal()
-    }
-    dependencies {
-        classpath 'de.dfki.mary:marytts-common:5.2-SNAPSHOT'
-    }
-}
-
 plugins {
-    id 'java'
+    id 'groovy'
 }
 
-task convertArpaToSampa {
-    description 'Converts lexicon files from CMUdict scheme format to plain text, with a SAMPA phoneset instead of ARPAbet'
-    processTestResources.dependsOn it
-    def lexiconFiles = fileTree('lib/modules/en').include('**/*.scm')
-    def mappingFile = file('lib/modules/en/synthesis/sampa2mrpa_en.map')
-    inputs.files lexiconFiles, mappingFile
-    def destFile = file("$sourceSets.test.output.resourcesDir/en.txt")
-    outputs.files destFile
-    doFirst {
-        destFile.parentFile.mkdirs()
+sourceSets {
+    lexicon
+}
+
+dependencies {
+    lexiconCompile localGroovy()
+}
+
+processLexiconResources {
+    from 'lib/modules/en/synthesis', {
+        include 'sampa2mrpa_en.map'
     }
+    from 'lib/modules/en/us/lexicon/cmu', {
+        include '*.scm'
+    }
+}
+
+task convertLexica {
+    description 'Converts lexicon files from CMUdict scheme format to plain text, with a SAMPA phoneset instead of ARPAbet'
+    dependsOn lexiconClasses
+    def destFile = file("$sourceSets.lexicon.output.resourcesDir/en.txt")
+    inputs.files processLexiconResources
+    outputs.files destFile
     doLast {
-        def arpa2sampa = [:]
-        mappingFile.readLines().collect { it.trim() }.findAll { !it.startsWith('#') }.each { line ->
-            def (sampa, arpa) = line.split('<->')
-            arpa2sampa[arpa] = sampa
-        }
-        destFile.withWriter { dest ->
-            lexiconFiles.files.each { lexiconFile ->
-                lexiconFile.eachLine { line ->
-                    if (line && !line.startsWith(';')) {
-                        def (lemma, pos, arpaPhones) = line.trim().replaceAll(/[()"]/, '').split(/\s/, 3)
-                        // TODO: handle stress and syllabification!
-                        def sampaPhones = arpaPhones.split().collect {
-                            def arpa = it.replaceAll(/[0-2]$/, '')
-                            def sampa = arpa2sampa[arpa]
-                            sampa ?: arpa
-                        }.join()
-                        dest.println "$lemma\t$sampaPhones${pos != 'nil' ? "\t$pos" : ''}"
-                    }
-                }
-            }
+        javaexec {
+            classpath sourceSets.lexicon.runtimeClasspath
+            main 'CmuDictConverter'
+            def mappingFile = file("$sourceSets.lexicon.output.resourcesDir/sampa2mrpa_en.map")
+            def lexiconFiles = fileTree(sourceSets.lexicon.output.resourcesDir).include('*.scm').files
+            args = [mappingFile, destFile, lexiconFiles].flatten()
         }
     }
 }
