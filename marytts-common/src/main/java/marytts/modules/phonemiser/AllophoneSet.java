@@ -535,6 +535,11 @@ public class AllophoneSet {
 		// Q iff has a lower sonority rank than Q (iterative).
 		Syllable initialSyllable = currentSyllable;
 		currentSyllable = null;
+		if (initialSyllable == null) {
+			// boundary condition: no syllable at all -- due to missing vowels
+			initialSyllable = new Syllable();
+			phonesAndSyllables.add(0, initialSyllable);
+		}
 		iterator = phonesAndSyllables.listIterator();
 		while (iterator.hasNext()) {
 			Object phoneOrSyllable = iterator.next();
