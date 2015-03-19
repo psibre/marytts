@@ -7,6 +7,16 @@ class ArpaStressAllophoneSet extends AllophoneSet {
 
     @Override
     void assignMissingStress(List syllables) {
+        // correct stress markers separated from the corresponding syllable nucleus
+        def prevSyllable
+        syllables.each { syllable ->
+            if (prevSyllable && syllable.firstAllophone.name() ==~ /[0-2]/) {
+                prevSyllable.appendAllophone syllable.firstAllophone
+                syllable.allophones = syllable.allophones.drop(1)
+            }
+            prevSyllable = syllable
+        }
+        // strip ARPAbet stress marks and assign corresponding Stress to the Syllable
         syllables.each { syllable ->
             syllable.allophones.removeAll {
                 switch (it.name()) {
