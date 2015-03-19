@@ -1,3 +1,4 @@
+import groovy.xml.XmlUtil
 import marytts.modules.phonemiser.AllophoneSet
 
 class CmuDictConverter {
@@ -14,7 +15,14 @@ class CmuDictConverter {
     }
 
     def loadAllophoneSet(allophoneSetFile) {
-        allophoneSet = new AllophoneSet(new File(allophoneSetFile).newInputStream())
+        def allophones = new XmlSlurper().parse(allophoneSetFile)
+        (0..2).each { stress ->
+            allophones.appendNode {
+                consonant ph: stress
+            }
+        }
+        def inputStream = new ByteArrayInputStream(XmlUtil.serialize(allophones).bytes)
+        allophoneSet = new AllophoneSet(inputStream)
     }
 
     def convert(dest, lexica) {
