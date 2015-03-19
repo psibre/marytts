@@ -2,6 +2,8 @@ plugins {
     id 'groovy'
 }
 
+version '5.2-SNAPSHOT'
+
 sourceSets {
     lexicon
 }
@@ -12,7 +14,8 @@ repositories {
 
 dependencies {
     lexiconCompile localGroovy()
-    lexiconCompile 'de.dfki.mary:marytts-common:5.2-SNAPSHOT'
+    lexiconCompile group: 'de.dfki.mary', name: 'marytts-common', version: version
+    lexiconCompile group: 'de.dfki.mary', name: 'marytts-transcription', version: version
 }
 
 processLexiconResources {
@@ -40,4 +43,12 @@ task convertLexica {
             args = [allophoneSetFile, mappingFile, destFile, lexiconFiles].flatten()
         }
     }
+}
+
+task trainLTS(type: JavaExec) {
+    description 'Trains LTS rules from converted CMUdict'
+    inputs.files file("$sourceSets.lexicon.output.resourcesDir/allophones.en_US.xml"), convertLexica
+    args inputs.files
+    classpath sourceSets.lexicon.runtimeClasspath
+    main 'marytts.tools.transcription.LTSLexiconPOSBuilder'
 }
