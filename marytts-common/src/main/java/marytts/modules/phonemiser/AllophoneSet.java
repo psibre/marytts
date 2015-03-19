@@ -569,7 +569,7 @@ public class AllophoneSet {
 		return StringUtils.join(phonesAndSyllables, " - ");
 	}
 
-	private void assignMissingStress(List<Object> phonesAndSyllables) {
+	protected void assignMissingStress(List<Object> phonesAndSyllables) {
 		boolean foundPrimaryStress = false;
 		for (Object object : phonesAndSyllables) {
 			Syllable syllable = (Syllable) object;
