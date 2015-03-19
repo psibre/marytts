@@ -22,9 +22,14 @@ public class EnglishLTSTest {
 
     @DataProvider
     public Object[][] lexicon() {
-        return this.getClass().getResource("en.txt").readLines().collect {
+        return this.getClass().getClassLoader().getResource("en.txt").readLines().collect {
             it.split('\t').take(2)
         }
+    }
+
+    @Test
+    public void testLexDataProvider() {
+        Assert.assertNotNull(lexicon())
     }
 
     @Test(dataProvider = "lexicon")
