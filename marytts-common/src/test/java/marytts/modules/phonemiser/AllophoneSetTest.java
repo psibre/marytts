@@ -142,6 +142,8 @@ public class AllophoneSetTest {
 				{ "fOY6maU6", "' f OY - 6 - m aU - 6" },
 				{ ",ha6tbE6ktU6mg@'ve:6", ", h a 6 t - b E 6 k - t U 6 m - g @ - ' v e: 6" },
 				{ "'pfaU@n,SlOY@", "' pf aU - @ n - , S l OY - @" },
+				{ "ab6", "' a - b 6" },
+				{ "6d@", "' 6 - d @" },
 				{ "psst", "' p s s t" }
 		};
 		// @formatter:on

@@ -461,14 +461,17 @@ public class AllophoneSet {
 		// First iteration (left-to-right):
 		// CSP (a): Associate each [+syllabic] segment to a syllable node.
 		Syllable currentSyllable = null;
+		Allophone previousAllophone = null;
 		while (iterator.hasNext()) {
 			String phone = (String) iterator.next();
 			try {
 				// either it's an Allophone
 				Allophone allophone = getAllophone(phone);
 				if (allophone.isSyllabic()) {
-					// if /6/ immediately follows a non-diphthong vowel, it should be appended instead of forming its own syllable
+					// if an r-type vowel immediately follows a non-diphthong vowel, it should be appended instead of forming its
+					// own syllable
 					if (allophone.getFeature("ctype").equals("r") && currentSyllable != null
+							&& currentSyllable.getLastAllophone() == previousAllophone
 							&& !currentSyllable.getLastAllophone().isDiphthong()) {
 						iterator.remove();
 						currentSyllable.appendAllophone(allophone);
@@ -477,6 +480,7 @@ public class AllophoneSet {
 						iterator.set(currentSyllable);
 					}
 				}
+				previousAllophone = allophone;
 			} catch (IllegalArgumentException e) {
 				// or a stress or boundary marker
 				if (!getIgnoreChars().contains(phone)) {
