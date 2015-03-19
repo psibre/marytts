@@ -33,11 +33,13 @@ class CmuDictConverter {
                         def (lemma, pos, arpaPhones) = line.trim().replaceAll(/[()"]/, '').split(/\s/, 3)
                         // TODO: handle stress and syllabification!
                         def sampaPhones = arpaPhones.split().collect {
-                            def arpa = it.replaceAll(/[0-2]$/, '')
+                            def (arpa, stress) = it.replaceAll(/(.+?)([0-2]?)$/, '$1 $2').tokenize()
+                            stress = stress ?: ''
                             def sampa = arpa2sampa[arpa]
-                            sampa ?: arpa
+                            (sampa ?: arpa) + stress
                         }.join()
-                        out.println "$lemma\t$sampaPhones${pos != 'nil' ? "\t$pos" : ''}"
+                        def transcription = allophoneSet.syllabify sampaPhones
+                        out.println "$lemma\t$transcription${pos != 'nil' ? "\t$pos" : ''}"
                     }
                 }
             }
