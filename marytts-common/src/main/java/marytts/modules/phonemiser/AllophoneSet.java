@@ -489,7 +489,6 @@ public class AllophoneSet {
 		// CSP (b): Given P (an unsyllabified segment) preceding Q (a syllabified segment), adjoin P to the syllable containing Q
 		// iff P has lower sonority rank than Q (iterative).
 		currentSyllable = null;
-		boolean foundPrimaryStress = false;
 		iterator = phonesAndSyllables.listIterator(phonesAndSyllables.size());
 		while (iterator.hasPrevious()) {
 			Object phoneOrSyllable = iterator.previous();
@@ -513,7 +512,6 @@ public class AllophoneSet {
 					case Stress.PRIMARY:
 						iterator.remove();
 						currentSyllable.setStress(Stress.PRIMARY);
-						foundPrimaryStress = true;
 						break;
 					case Stress.SECONDARY:
 						iterator.remove();
@@ -565,13 +563,26 @@ public class AllophoneSet {
 			}
 		}
 
-		// if primary stress was not provided, assign it to initial syllable
-		if (!foundPrimaryStress) {
-			initialSyllable.setStress(Stress.PRIMARY);
-		}
+		assignMissingStress(phonesAndSyllables);
 
 		// join Syllables with dashes and return the String
 		return StringUtils.join(phonesAndSyllables, " - ");
+	}
+
+	private void assignMissingStress(List<Object> phonesAndSyllables) {
+		boolean foundPrimaryStress = false;
+		for (Object object : phonesAndSyllables) {
+			Syllable syllable = (Syllable) object;
+			if (syllable.getStress() == Stress.PRIMARY) {
+				foundPrimaryStress = true;
+				break;
+			}
+		}
+		// if primary stress was not provided, assign it to initial syllable
+		if (!foundPrimaryStress) {
+			Syllable initialSyllable = (Syllable) phonesAndSyllables.get(0);
+			initialSyllable.setStress(Stress.PRIMARY);
+		}
 	}
 
 	/**
@@ -602,6 +613,10 @@ public class AllophoneSet {
 
 		public void appendAllophone(Allophone allophone) {
 			allophones.add(allophone);
+		}
+
+		public String getStress() {
+			return stress;
 		}
 
 		public void setStress(String stress) {
