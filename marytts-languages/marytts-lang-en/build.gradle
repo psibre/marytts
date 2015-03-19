@@ -6,16 +6,21 @@ sourceSets {
     lexicon
 }
 
+repositories {
+    mavenLocal()
+}
+
 dependencies {
     lexiconCompile localGroovy()
+    lexiconCompile 'de.dfki.mary:marytts-common:5.2-SNAPSHOT'
 }
 
 processLexiconResources {
     from 'lib/modules/en/synthesis', {
         include 'sampa2mrpa_en.map'
     }
-    from 'lib/modules/en/us/lexicon/cmu', {
-        include '*.scm'
+    from 'lib/modules/en/us/lexicon', {
+        include 'allophones.en_US.xml', '**/*.scm'
     }
 }
 
@@ -29,9 +34,10 @@ task convertLexica {
         javaexec {
             classpath sourceSets.lexicon.runtimeClasspath
             main 'CmuDictConverter'
+            def allophoneSetFile = file("$sourceSets.lexicon.output.resourcesDir/allophones.en_US.xml")
             def mappingFile = file("$sourceSets.lexicon.output.resourcesDir/sampa2mrpa_en.map")
-            def lexiconFiles = fileTree(sourceSets.lexicon.output.resourcesDir).include('*.scm').files
-            args = [mappingFile, destFile, lexiconFiles].flatten()
+            def lexiconFiles = fileTree(sourceSets.lexicon.output.resourcesDir).include('**/*.scm').files
+            args = [allophoneSetFile, mappingFile, destFile, lexiconFiles].flatten()
         }
     }
 }

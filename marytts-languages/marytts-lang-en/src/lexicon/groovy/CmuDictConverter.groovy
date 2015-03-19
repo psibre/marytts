@@ -1,12 +1,20 @@
+import marytts.modules.phonemiser.AllophoneSet
+
 class CmuDictConverter {
 
     def arpa2sampa = [:]
+    def allophoneSet
 
-    CmuDictConverter(mapping) {
+    CmuDictConverter(allophones, mapping) {
         new File(mapping).readLines().collect { it.trim() }.findAll { !it.startsWith('#') }.each { line ->
             def (sampa, arpa) = line.split('<->')
             arpa2sampa[arpa] = sampa
         }
+        loadAllophoneSet(allophones)
+    }
+
+    def loadAllophoneSet(allophoneSetFile) {
+        allophoneSet = new AllophoneSet(new File(allophoneSetFile).newInputStream())
     }
 
     def convert(dest, lexica) {
@@ -29,8 +37,9 @@ class CmuDictConverter {
     }
 
     static void main(String[] args) {
-        def (mapping, dest, lexica) = args.with { it[0..1] + [it[2..-1]] }
-        def converter = new CmuDictConverter(mapping)
-        converter.convert(dest, lexica)
+        def (allophoneSetFile, mappingFile, destFile) = args
+        def lexiconFiles = args.drop(3)
+        def converter = new CmuDictConverter(allophoneSetFile, mappingFile)
+        converter.convert(destFile, lexiconFiles)
     }
 }
