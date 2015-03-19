@@ -1,6 +1,8 @@
+import groovy.util.logging.*
 import groovy.xml.XmlUtil
 import marytts.modules.phonemiser.AllophoneSet
 
+@Log
 class CmuDictConverter {
 
     def arpa2sampa = [:]
@@ -38,8 +40,12 @@ class CmuDictConverter {
                             def sampa = arpa2sampa[arpa]
                             (sampa ?: arpa) + stress
                         }.join()
-                        def transcription = allophoneSet.syllabify sampaPhones
-                        out.println "$lemma\t$transcription${pos != 'nil' ? "\t$pos" : ''}"
+                        try {
+                            def transcription = allophoneSet.syllabify sampaPhones
+                            out.println "$lemma\t$transcription${pos != 'nil' ? "\t$pos" : ''}"
+                        } catch (Exception e) {
+                            log.warning "Could not syllabify <$lemma> -- excluding it!"
+                        }
                     }
                 }
             }
