@@ -630,16 +630,4 @@ public class AllophoneSet {
 			return String.format("%s %s", stress, StringUtils.join(allophones, " ")).trim();
 		}
 	}
-
-	/**
-	 * Constants for Stress markers
-	 * 
-	 * @author ingmar
-	 *
-	 */
-	public interface Stress {
-		String NONE = "";
-		String PRIMARY = "'";
-		String SECONDARY = ",";
-	}
 }
