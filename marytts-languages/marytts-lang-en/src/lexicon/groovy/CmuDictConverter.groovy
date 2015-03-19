@@ -41,7 +41,7 @@ class CmuDictConverter {
                             (sampa ?: arpa) + stress
                         }.join()
                         try {
-                            def transcription = allophoneSet.syllabify sampaPhones
+                            def transcription = allophoneSet.syllabify(sampaPhones).replaceAll(' ', '')
                             out.println "$lemma\t$transcription${pos != 'nil' ? "\t$pos" : ''}"
                         } catch (Exception e) {
                             log.warning "Could not syllabify <$lemma> -- excluding it!"
