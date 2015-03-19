@@ -138,7 +138,7 @@ public class AllophoneSet {
 	// The number of characters in the longest Allophone symbol
 	private int maxAllophoneSymbolLength = 1;
 
-	private AllophoneSet(InputStream inputStream) throws MaryConfigurationException {
+	protected AllophoneSet(InputStream inputStream) throws MaryConfigurationException {
 		allophones = new TreeMap<String, Allophone>();
 		// parse the xml file:
 		Document document;

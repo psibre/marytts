@@ -1,6 +1,6 @@
 import groovy.util.logging.*
 import groovy.xml.XmlUtil
-import marytts.modules.phonemiser.AllophoneSet
+import marytts.modules.phonemiser.ArpaStressAllophoneSet
 
 @Log
 class CmuDictConverter {
@@ -24,7 +24,7 @@ class CmuDictConverter {
             }
         }
         def inputStream = new ByteArrayInputStream(XmlUtil.serialize(allophones).bytes)
-        allophoneSet = new AllophoneSet(inputStream)
+        allophoneSet = new ArpaStressAllophoneSet(inputStream)
     }
 
     def convert(dest, lexica) {
