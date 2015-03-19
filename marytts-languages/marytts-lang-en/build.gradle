@@ -6,16 +6,25 @@ version '5.2-SNAPSHOT'
 
 sourceSets {
     lexicon
+    lexiconTest
 }
 
 repositories {
     mavenLocal()
+    jcenter()
 }
 
 dependencies {
     lexiconCompile localGroovy()
     lexiconCompile group: 'de.dfki.mary', name: 'marytts-common', version: version
     lexiconCompile group: 'de.dfki.mary', name: 'marytts-transcription', version: version
+    lexiconTestCompile localGroovy()
+    lexiconTestCompile 'org.testng:testng:6.8.13'
+    lexiconTestCompile(group: 'de.dfki.mary', name: 'marytts-lang-en', version: '5.1.1') {
+        exclude module: 'freetts'
+        exclude module: 'freetts-de'
+        exclude module: 'freetts-en_us'
+    }
 }
 
 processLexiconResources {
@@ -51,4 +60,10 @@ task trainLTS(type: JavaExec) {
     args inputs.files
     classpath sourceSets.lexicon.runtimeClasspath
     main 'marytts.tools.transcription.LTSLexiconPOSBuilder'
+}
+
+task lexiconTest(type: Test) {
+    useTestNG()
+    testClassesDir = sourceSets.lexiconTest.output.classesDir
+    classpath = sourceSets.lexiconTest.runtimeClasspath + sourceSets.lexicon.runtimeClasspath
 }
