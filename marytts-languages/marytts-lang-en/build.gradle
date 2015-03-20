@@ -62,8 +62,12 @@ task trainLTS(type: JavaExec) {
     main 'marytts.tools.transcription.LTSLexiconPOSBuilder'
 }
 
+trainLTS.dependsOn convertLexica
+
 task lexiconTest(type: Test) {
     useTestNG()
     testClassesDir = sourceSets.lexiconTest.output.classesDir
     classpath = sourceSets.lexiconTest.runtimeClasspath + sourceSets.lexicon.runtimeClasspath
 }
+
+lexiconTest.dependsOn convertLexica
