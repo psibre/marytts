@@ -60,7 +60,19 @@ task trainLTS(type: JavaExec) {
     args inputs.files
     classpath sourceSets.lexicon.runtimeClasspath
     main 'marytts.tools.transcription.LTSLexiconPOSBuilder'
+    doLast {
+        copy {
+            from sourceSets.lexicon.output.resourcesDir
+            include 'en.lextxt',
+                    'en.lts',
+                    'en_lexicon.dict',
+                    'en_lexicon.fst'
+            into "$sourceSets.main.output.resourcesDir/marytts/language/en_US/lexicon"
+        }
+    }
 }
+
+processResources.dependsOn trainLTS
 
 trainLTS.dependsOn convertLexica
 
