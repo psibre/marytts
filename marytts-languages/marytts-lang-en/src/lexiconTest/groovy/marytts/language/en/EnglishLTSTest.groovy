@@ -37,7 +37,7 @@ public class EnglishLTSTest {
         def maryXmlDoc = mary.generateXML(lemma)
         def maryXml = XmlUtil.serialize(maryXmlDoc.documentElement)
         def phStr = xmlParser.parseText(maryXml).p.s.t.@ph[0]
-        def actualTranscription = phStr.replaceAll(' ', '').replaceAll('-', '')
+        def actualTranscription = phStr.replaceAll(' ', '')
         Assert.assertEquals(actualTranscription, expectedTranscription)
     }
 }
