@@ -9,12 +9,23 @@ sourceSets {
     lexiconTest
 }
 
+configurations {
+    lexicon
+}
+
 repositories {
     mavenLocal()
     jcenter()
+    ivy {
+        url 'http://svn.code.sf.net/p/cmusphinx/code/trunk/'
+        layout 'pattern', {
+            artifact '[module]/[artifact]-[revision]'
+        }
+    }
 }
 
 dependencies {
+    lexicon name: 'cmudict', version: '0.7b'
     lexiconCompile localGroovy()
     lexiconCompile group: 'de.dfki.mary', name: 'marytts-common', version: version
     lexiconCompile group: 'de.dfki.mary', name: 'marytts-transcription', version: version
@@ -34,6 +45,7 @@ processLexiconResources {
     from 'lib/modules/en/us/lexicon', {
         include 'allophones.en_US.xml', '**/*.scm'
     }
+    from configurations.lexicon
 }
 
 task convertLexica {
