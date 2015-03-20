@@ -31,11 +31,7 @@ dependencies {
     lexiconCompile group: 'de.dfki.mary', name: 'marytts-transcription', version: version
     lexiconTestCompile localGroovy()
     lexiconTestCompile 'org.testng:testng:6.8.13'
-    lexiconTestCompile(group: 'de.dfki.mary', name: 'marytts-lang-en', version: '5.1.1') {
-        exclude module: 'freetts'
-        exclude module: 'freetts-de'
-        exclude module: 'freetts-en_us'
-    }
+    lexiconTestCompile group: 'de.dfki.mary', name: 'marytts-client', version: version
 }
 
 processLexiconResources {

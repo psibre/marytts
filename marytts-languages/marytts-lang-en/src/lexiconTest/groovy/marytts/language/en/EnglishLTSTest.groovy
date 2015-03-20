@@ -3,7 +3,7 @@ package marytts.language.en
 import org.testng.annotations.*
 import org.testng.Assert
 
-import marytts.LocalMaryInterface
+import marytts.client.RemoteMaryInterface
 import marytts.exceptions.MaryConfigurationException
 
 import groovy.xml.*
@@ -15,7 +15,7 @@ public class EnglishLTSTest {
 
     @BeforeClass
     public void setUp() throws MaryConfigurationException {
-        mary = new LocalMaryInterface()
+        mary = new RemoteMaryInterface()
         mary.outputType = "PHONEMES"
         xmlParser = new XmlParser()
     }
@@ -36,7 +36,7 @@ public class EnglishLTSTest {
     public void testTranscriptions(String lemma, String expectedTranscription) {
         def maryXmlDoc = mary.generateXML(lemma)
         def maryXml = XmlUtil.serialize(maryXmlDoc.documentElement)
-        def phStr = xmlParser.parseText(maryXml).p.s.t.@ph[0]
+        def phStr = xmlParser.parseText(maryXml).p.voice.s.t.@ph[0]
         def actualTranscription = phStr.replaceAll(' ', '')
         Assert.assertEquals(actualTranscription, expectedTranscription)
     }
