@@ -27,24 +27,26 @@ class CmuDictConverter {
         allophoneSet = new ArpaStressAllophoneSet(inputStream)
     }
 
-    def convert(dest, lexica) {
+    def convert(dest, lexicon) {
         new File(dest).withWriter { out ->
-            lexica.each { lexicon ->
-                new File(lexicon).eachLine { line ->
-                    if (line && !line.startsWith(';')) {
-                        def (lemma, pos, arpaPhones) = line.trim().replaceAll(/[()"]/, '').split(/\s/, 3)
-                        // TODO: handle stress and syllabification!
-                        def sampaPhones = arpaPhones.split().collect {
-                            def (arpa, stress) = it.replaceAll(/(.+?)([0-2]?)$/, '$1 $2').tokenize()
-                            stress = stress ?: ''
-                            def sampa = arpa2sampa[arpa]
-                            (sampa ?: arpa) + stress
-                        }.join()
-                        try {
-                            def transcription = allophoneSet.syllabify(sampaPhones).replaceAll(' ', '')
-                            out.println "$lemma\t$transcription${pos != 'nil' ? "\t$pos" : ''}"
-                        } catch (Exception e) {
-                            log.warning "Could not syllabify <$lemma> -- excluding it!"
+            new File(lexicon).eachLine { line ->
+                if (line) {
+                    def m = line =~ /^([A-Z]+(\d+)?('S)?)(\([1-3]\))?\s+.*/
+                    if (m) {
+                        if (!m.group(2) && !m.group(4)) {
+                            def (lemma, arpaPhones) = line.toLowerCase().trim().split(/\s+/, 2)
+                            def sampaPhones = arpaPhones.split().collect {
+                                def (arpa, stress) = it.replaceAll(/(.+?)([0-2]?)$/, '$1 $2').tokenize()
+                                stress = stress ?: ''
+                                def sampa = arpa2sampa[arpa]
+                                (sampa ?: arpa) + stress
+                            }.join()
+                            try {
+                                def transcription = allophoneSet.syllabify(sampaPhones).replaceAll(' ', '')
+                                out.println "$lemma\t$transcription"
+                            } catch (Exception e) {
+                                log.warning "Could not syllabify <$lemma> -- excluding it!"
+                            }
                         }
                     }
                 }
@@ -53,9 +55,8 @@ class CmuDictConverter {
     }
 
     static void main(String[] args) {
-        def (allophoneSetFile, mappingFile, destFile) = args
-        def lexiconFiles = args.drop(3)
+        def (allophoneSetFile, mappingFile, destFile, lexiconFile) = args
         def converter = new CmuDictConverter(allophoneSetFile, mappingFile)
-        converter.convert(destFile, lexiconFiles)
+        converter.convert(destFile, lexiconFile)
     }
 }

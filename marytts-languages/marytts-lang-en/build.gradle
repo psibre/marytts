@@ -43,13 +43,13 @@ processLexiconResources {
         include 'sampa2mrpa_en.map'
     }
     from 'lib/modules/en/us/lexicon', {
-        include 'allophones.en_US.xml', '**/*.scm'
+        include 'allophones.en_US.xml'
     }
     from configurations.lexicon
 }
 
-task convertLexica {
-    description 'Converts lexicon files from CMUdict scheme format to plain text, with a SAMPA phoneset instead of ARPAbet'
+task convertLexicon {
+    description 'Converts lexicon file to plain text, with a SAMPA phoneset instead of ARPAbet'
     dependsOn lexiconClasses
     def destFile = file("$sourceSets.lexicon.output.resourcesDir/en.txt")
     inputs.files processLexiconResources
@@ -60,15 +60,15 @@ task convertLexica {
             main 'CmuDictConverter'
             def allophoneSetFile = file("$sourceSets.lexicon.output.resourcesDir/allophones.en_US.xml")
             def mappingFile = file("$sourceSets.lexicon.output.resourcesDir/sampa2mrpa_en.map")
-            def lexiconFiles = fileTree(sourceSets.lexicon.output.resourcesDir).include('**/*.scm').files
-            args = [allophoneSetFile, mappingFile, destFile, lexiconFiles].flatten()
+            def lexiconFile = configurations.lexicon.singleFile
+            args = [allophoneSetFile, mappingFile, destFile, lexiconFile].flatten()
         }
     }
 }
 
 task trainLTS(type: JavaExec) {
     description 'Trains LTS rules from converted CMUdict'
-    inputs.files file("$sourceSets.lexicon.output.resourcesDir/allophones.en_US.xml"), convertLexica
+    inputs.files file("$sourceSets.lexicon.output.resourcesDir/allophones.en_US.xml"), convertLexicon
     args inputs.files
     classpath sourceSets.lexicon.runtimeClasspath
     main 'marytts.tools.transcription.LTSLexiconPOSBuilder'
@@ -86,7 +86,7 @@ task trainLTS(type: JavaExec) {
 
 processResources.dependsOn trainLTS
 
-trainLTS.dependsOn convertLexica
+trainLTS.dependsOn convertLexicon
 
 task lexiconTest(type: Test) {
     useTestNG()
@@ -94,4 +94,4 @@ task lexiconTest(type: Test) {
     classpath = sourceSets.lexiconTest.runtimeClasspath + sourceSets.lexicon.runtimeClasspath
 }
 
-lexiconTest.dependsOn convertLexica
+lexiconTest.dependsOn convertLexicon
