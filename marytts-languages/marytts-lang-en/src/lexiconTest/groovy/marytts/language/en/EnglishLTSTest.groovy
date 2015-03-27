@@ -36,8 +36,10 @@ public class EnglishLTSTest {
     public void testTranscriptions(String lemma, String expectedTranscription) {
         def maryXmlDoc = mary.generateXML(lemma)
         def maryXml = XmlUtil.serialize(maryXmlDoc.documentElement)
-        def phStr = xmlParser.parseText(maryXml).p.s.t.@ph[0]
-        def actualTranscription = phStr.replaceAll(' ', '')
+        def xml = new XmlSlurper().parseText(maryXml)
+        def ph = xml.depthFirst().findAll { it.name() == 't' }.collect { it.@ph }.join()
+        def phonemes = ph.tokenize()
+        def actualTranscription = phonemes.join()
         Assert.assertEquals(actualTranscription, expectedTranscription)
     }
 }
