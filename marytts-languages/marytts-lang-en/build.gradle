@@ -89,9 +89,12 @@ processResources.dependsOn trainLTS
 trainLTS.dependsOn convertLexicon
 
 task lexiconTest(type: Test) {
+    dependsOn trainLTS
     useTestNG()
     testClassesDir = sourceSets.lexiconTest.output.classesDir
     classpath = sourceSets.lexiconTest.runtimeClasspath + sourceSets.lexicon.runtimeClasspath
+    systemProperties = [
+            'en_US.lexicon'      : "$sourceSets.main.output.resourcesDir/marytts/language/en_US/lexicon/en_lexicon.fst",
+            'en_US.lettertosound': "$sourceSets.main.output.resourcesDir/marytts/language/en_US/lexicon/en.lts"
+    ]
 }
-
-lexiconTest.dependsOn convertLexicon
