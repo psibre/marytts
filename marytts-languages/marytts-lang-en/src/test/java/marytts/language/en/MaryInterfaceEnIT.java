@@ -22,7 +22,7 @@ package marytts.language.en;
 import marytts.LocalMaryInterface;
 import marytts.MaryInterface;
 import marytts.datatypes.MaryDataType;
-import marytts.exceptions.SynthesisException;
+import marytts.datatypes.MaryXML;
 import marytts.features.FeatureDefinition;
 import marytts.features.FeatureRegistry;
 import marytts.util.FeatureUtils;
@@ -30,6 +30,7 @@ import marytts.util.FeatureUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import static org.junit.Assert.*;
 
@@ -61,12 +62,21 @@ public class MaryInterfaceEnIT {
 		String tf = mary.generateText("Hello world");
 		assertNotNull(tf);
 	}
-    
+
 	@Test
 	public void convertTextToPhonemes() throws Exception {
 		mary.setOutputType(MaryDataType.PHONEMES.name());
 		Document doc = mary.generateXML("Applejuice");
 		assertNotNull(doc);
+	}
+
+	@Test(expected = AssertionError.class)
+	public void convertOOVTextToPOS() throws Exception {
+		mary.setOutputType(MaryDataType.PARTSOFSPEECH.name());
+		Document doc = mary.generateXML("Fnordalicious");
+		Element token = (Element) doc.getElementsByTagName(MaryXML.TOKEN).item(0);
+		String pos = token.getAttribute("pos");
+		assertNotEquals(pos, ".");
 	}
 
 	@Test
