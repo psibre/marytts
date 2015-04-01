@@ -251,7 +251,8 @@ public class LTSTrainer extends AlignerTrainer {
 		props.setProperty("lowercase", String.valueOf(convertToLowercase));
 		props.setProperty("stress", String.valueOf(considerStress));
 		props.setProperty("context", String.valueOf(context));
-
+		System.out.println("      Stress Considered: " + considerStress);
+		logger.debug("      Stress Considered: " + considerStress);
 		CART bigTree = new CART(rootNode, fd, props);
 
 		return bigTree;

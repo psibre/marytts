@@ -92,7 +92,7 @@ public class LexiconCreator {
 	 *            where to create the letter-to-sound prediction tree.
 	 */
 	public LexiconCreator(AllophoneSet allophoneSet, String lexiconFilename, String fstFilename, String ltsFilename) {
-		this(allophoneSet, lexiconFilename, fstFilename, ltsFilename, true, true, 2);
+		this(allophoneSet, lexiconFilename, fstFilename, ltsFilename, true, false, 2);
 	}
 
 	/**

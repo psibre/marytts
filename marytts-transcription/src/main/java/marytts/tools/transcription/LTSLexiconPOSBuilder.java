@@ -172,7 +172,7 @@ public class LTSLexiconPOSBuilder {
 			}
 		}
 
-		LTSTrainer tp = new LTSTrainer(phoneSet, true, true, 2);
+		LTSTrainer tp = new LTSTrainer(phoneSet, true, false, 2);
 		tp.readLexicon(map);
 		System.out.println("training ... ");
 		// make some alignment iterations
