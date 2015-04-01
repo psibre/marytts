@@ -582,8 +582,7 @@ public abstract class Utt2XMLBase extends InternalModule {
 		for (int i = 0; i < voicePhones.length; i++) {
 			phoneBuf.append(voicePhones[i]);
 		}
-		Syllabifier syllabifier = new Syllabifier(allophoneSet);
-		return syllabifier.syllabify(phoneBuf.toString());
+		return allophoneSet.syllabify(phoneBuf.toString());
 	}
 
 }
