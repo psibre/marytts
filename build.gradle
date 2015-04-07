@@ -1,0 +1,6 @@
+plugins {
+    id 'java'
+}
+
+group 'de.dfki.mary'
+version '5.2-SNAPSHOT'
