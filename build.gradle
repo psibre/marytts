@@ -3,4 +3,12 @@ allprojects {
     version '5.2-SNAPSHOT'
 
     apply plugin: 'java'
+
+    repositories {
+        jcenter()
+        ivy {
+            url "$rootDir/lib/repo"
+            layout 'maven'
+        }
+    }
 }

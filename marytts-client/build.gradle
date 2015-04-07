@@ -1,0 +1,4 @@
+dependencies {
+    compile project(':voice-cmu-slt-hsmm')
+    compile diffJava
+}

@@ -1,0 +1,14 @@
+dependencies {
+    compile project(':marytts-signalproc')
+    compile commonsCollections
+    compile emotionmlCheckerJava
+    compile freetts
+    compile freettsDe
+    compile freettsEnUs
+    compile guava
+    compile httpcoreNio
+    compile icu4j
+    compile jtokCore
+    compile opennlpTools
+    compile trove4j
+}

@@ -1,0 +1,7 @@
+dependencies {
+    compile project(':marytts-client')
+    compile mwdumper
+    compile oro
+    compile sgt
+    compile wekaDev
+}

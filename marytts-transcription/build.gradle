@@ -1,0 +1,4 @@
+dependencies {
+    compile project(':marytts-builder')
+    compile swingLayout
+}
