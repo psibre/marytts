@@ -1,6 +1,6 @@
-plugins {
-    id 'java'
-}
+allprojects {
+    group 'de.dfki.mary'
+    version '5.2-SNAPSHOT'
 
-group 'de.dfki.mary'
-version '5.2-SNAPSHOT'
+    apply plugin: 'java'
+}
