@@ -39,8 +39,8 @@ public class CoverageUtilsIT {
 
 	String text = "Hello world";
 	Locale locale = Locale.US;
-	String[] phones = { "h", "@", "l", "@U", "w", "r=", "l", "d", "_" };
-	String[] next_phones = { "@", "l", "@U", "w", "r=", "l", "d", "_", "_" };
+	String[] phones = { "h", "V", "l", "@U", "w", "r=", "l", "d", "_" };
+	String[] next_phones = { "V", "l", "@U", "w", "r=", "l", "d", "_", "_" };
 	String[] selection_prosodies = { "0", "0", "pre-nuclear", "pre-nuclear", "nuclear", "nuclear", "nuclear", "nuclear", "0" };
 
 	private void assertFeaturesMatchTarget(byte[] data, String featureNames) {
