@@ -297,7 +297,7 @@ public class TokenToWords implements UtteranceProcessor {
 			wordRelation.addWord(tokenItem, tokenVal);
 
 		} else if ((tokenVal.equals("a") || tokenVal.equals("A"))
-				&& ((tokenItem.getNext() == null) || !(tokenVal.equals(itemName)) || !(((String) tokenItem.findFeature("punc"))
+				&& (!(tokenItem.getNext() == null) || !(tokenVal.equals(itemName)) || !(((String) tokenItem.findFeature("punc"))
 						.equals("")))) {
 			/* if A is a sub part of a token, then its ey not ah */
 			wordRelation.addWord(tokenItem, "_a");
