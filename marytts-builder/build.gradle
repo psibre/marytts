@@ -1,5 +1,11 @@
 dependencies {
-    compile project(':marytts-client')
+    compile(project(':marytts-client')) {
+        transitive = true
+    }
+    testCompile diff4j
+    testCompile festassert
+    testCompile hamcrest
+    testCompile junit
     compile mwdumper
     compile oro
     compile sgt

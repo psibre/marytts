@@ -1,3 +1,5 @@
 dependencies {
-    compile project(':marytts-runtime')
+    compile(project(':marytts-runtime')) {
+        transitive = true
+    }
 }

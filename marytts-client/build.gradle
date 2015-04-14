@@ -1,4 +1,13 @@
 dependencies {
-    compile project(':voice-cmu-slt-hsmm')
+    compile(project(':marytts-common')) {
+        transitive = true
+    }
+    compile(project(':marytts-languages:marytts-lang-en')) {
+        transitive = true
+    }
+    compile(project(':voice-cmu-slt-hsmm')) {
+        transitive = true
+    }
     compile diffJava
+    testCompile junit
 }

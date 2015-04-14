@@ -1,5 +1,7 @@
 dependencies {
-    compile project(':marytts-signalproc')
+    compile(project(':marytts-signalproc')) {
+        transitive = true
+    }
     compile commonsCollections
     compile emotionmlCheckerJava
     compile freetts
