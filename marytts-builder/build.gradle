@@ -1,5 +1,5 @@
 dependencies {
-    compile(project(':marytts-client')) {
+    compile(rootProject.allprojects.find { it.name == 'marytts-client' }) {
         transitive = true
     }
     testCompile diff4j

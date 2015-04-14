@@ -1,5 +1,5 @@
 dependencies {
-    compile(project(':marytts-signalproc')) {
+    compile(rootProject.allprojects.find { it.name == 'marytts-signalproc' }) {
         transitive = true
     }
     compile commonsCollections

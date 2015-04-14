@@ -7,7 +7,7 @@ allprojects {
     repositories {
         jcenter()
         ivy {
-            url "$rootDir/lib/repo"
+            url "${rootProject.allprojects.find { it.name == 'marytts' }.projectDir}/lib/repo"
             layout 'maven'
         }
     }

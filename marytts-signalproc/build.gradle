@@ -1,4 +1,4 @@
 dependencies {
-    compile project(':marytts-common')
+    compile rootProject.allprojects.find { it.name == 'marytts-common' }
     compile swingLayout
 }
