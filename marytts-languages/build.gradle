@@ -1,5 +1,5 @@
 subprojects {
     dependencies {
-        compile project(':marytts-runtime')
+        compile rootProject.allprojects.find { it.name == 'marytts-runtime' }
     }
 }
