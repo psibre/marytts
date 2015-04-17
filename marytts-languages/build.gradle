@@ -1,5 +1,6 @@
 subprojects {
     dependencies {
         compile rootProject.allprojects.find { it.name == 'marytts-runtime' }
+        testCompile junit
     }
 }

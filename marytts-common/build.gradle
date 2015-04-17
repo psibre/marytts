@@ -2,4 +2,6 @@ dependencies {
     compile commonsLang
     compile commonsIo
     compile log4j
+    testCompile junit
+    testCompile testNG
 }

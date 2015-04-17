@@ -2,4 +2,5 @@ dependencies {
     compile(rootProject.allprojects.find { it.name == 'marytts-runtime' }) {
         transitive = true
     }
+    testCompile junit
 }

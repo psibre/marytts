@@ -1,4 +1,5 @@
 dependencies {
     compile rootProject.allprojects.find { it.name == 'marytts-common' }
     compile swingLayout
+    testCompile junit
 }

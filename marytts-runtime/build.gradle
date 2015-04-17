@@ -13,4 +13,6 @@ dependencies {
     compile jtokCore
     compile opennlpTools
     compile trove4j
+    testCompile festassert
+    testCompile junit
 }

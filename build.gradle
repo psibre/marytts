@@ -37,8 +37,10 @@ allprojects {
                 oro                 : 'oro:oro:2.0.8',
                 sgt                 : 'gov.noaa.pmel.sgt:sgt:3.0',
                 swingLayout         : 'org.swinglabs:swing-layout:1.0.3',
+                testNG              : 'org.testng:testng:6.8.13',
                 trove4j             : 'net.sf.trove4j:trove4j:2.0.2',
-                wekaDev             : 'nz.ac.waikato.cms.weka:weka-dev:3.7.6'
+                wekaDev             : 'nz.ac.waikato.cms.weka:weka-dev:3.7.6',
+                xmlunit             : 'xmlunit:xmlunit:1.6'
         ].each { key, value ->
             set key, value
         }
