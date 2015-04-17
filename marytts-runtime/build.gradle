@@ -12,6 +12,7 @@ dependencies {
     compile icu4j
     compile jtokCore
     compile opennlpTools
+    compile hsqldb
     compile trove4j
     testCompile festassert
     testCompile junit
