@@ -12,6 +12,14 @@ allprojects {
         }
     }
 
+    sourceSets {
+        test {
+            java {
+                exclude '**/*IT.java'
+            }
+        }
+    }
+
     ext {
         // dependencyManagement
         [
