@@ -40,7 +40,7 @@ import org.apache.http.protocol.HttpContext;
 public class FileRequestHandler extends BaseHttpRequestHandler {
 
 	private Set<String> validFiles = new HashSet<String>(Arrays.asList(new String[] { "favicon.ico", "index.html",
-			"documentation.html", "mary.js" }));
+			"documentation.html", "mary.js", "vkbeautify.js" }));
 
 	public FileRequestHandler() {
 		super();
@@ -99,5 +99,4 @@ public class FileRequestHandler extends BaseHttpRequestHandler {
 			MaryHttpServerUtils.errorFileNotFound(response, resourceFilename);
 		}
 	}
-
 }

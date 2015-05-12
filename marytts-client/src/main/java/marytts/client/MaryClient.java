@@ -362,7 +362,7 @@ public abstract class MaryClient {
 	 *             if the host could not be found
 	 */
 	public Vector<MaryClient.Voice> getVoices() throws IOException {
-		if (data.allVoices == null)
+		if (data.allVoices == null || data.allVoices.isEmpty())
 			fillVoices();
 
 		assert data.allVoices != null && data.allVoices.size() > 0;

@@ -27,14 +27,19 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.AudioFileFormat.Type;
+import javax.sound.sampled.AudioSystem;
 
 import marytts.util.MaryUtils;
 import marytts.util.data.audio.MaryAudioUtils;
 import marytts.util.http.Address;
 import marytts.util.math.MathUtils;
 import marytts.util.string.StringUtils;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  *
@@ -83,9 +88,11 @@ public class MaryFormData {
 	public AudioEffectsBoxData effectsBoxData;
 	public Vector<String> limitedDomainExampleTexts;
 
-	public Map<String, String> keyValuePairs; // Key-Value pairs for communication with server
+	public Map<String, String> keyValuePairs; // Key-Value pairs for
+												// communication with server
 
-	public String outputAudioResponseID; // output audio file for web browser client
+	public String outputAudioResponseID; // output audio file for web browser
+											// client
 	public String mimeType; // MIME type for output audio (web browser clients)
 
 	public MaryFormData() {
@@ -194,56 +201,40 @@ public class MaryFormData {
 		allVoices = null;
 		voicesByLocaleMap = null;
 		limitedDomainVoices = null;
-
-		if (info != null && info.length() > 0) {
+		JsonArray voiceArray = null;
+		try {
+			JsonParser parser = new JsonParser();
+			JsonElement jsonElement = parser.parse(info);
+			voiceArray = jsonElement.getAsJsonArray();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// if (info!=null && info.length()>0)
+		if (voiceArray != null && voiceArray.size() > 0) {
 			allVoices = new Vector<MaryClient.Voice>();
 			voicesByLocaleMap = new HashMap<Locale, Vector<MaryClient.Voice>>();
 			limitedDomainVoices = new HashMap<String, Vector<String>>();
-			String[] voiceStrings = info.split("\n");
-
-			for (int i = 0; i < voiceStrings.length; i++) {
-				StringTokenizer st = new StringTokenizer(voiceStrings[i]);
-				if (!st.hasMoreTokens())
-					continue; // ignore entry
-				String name = st.nextToken();
-				if (!st.hasMoreTokens())
-					continue; // ignore entry
-				String localeString = st.nextToken();
+			// String[] voiceStrings = info.split("\n");
+			for (int i = 0; i < voiceArray.size(); i++) {
+				JsonObject currentVoice = (JsonObject) voiceArray.get(i);
+				String name = currentVoice.has("name") ? currentVoice.get("name").toString().replace("\"", "") : "";
+				String localeString = currentVoice.has("locale") ? currentVoice.get("locale").toString().replace("\"", "") : "";
 				Locale locale = string2locale(localeString);
+				// locale = string2locale("en-US");
 				assert locale != null;
-				if (!st.hasMoreTokens())
-					continue; // ignore entry
-				String gender = st.nextToken();
-
+				String gender = currentVoice.has("gender") ? currentVoice.get("gender").toString().replace("\"", "") : "";
 				MaryClient.Voice voice = null;
-				if (isServerVersionAtLeast("3.5.0")) {
-					String synthesizerType;
-					if (!st.hasMoreTokens())
-						synthesizerType = "non-specified";
-					else
-						synthesizerType = st.nextToken();
-
-					if (!st.hasMoreTokens()) {
-						// assume domain is general
-						voice = new MaryClient.Voice(name, locale, gender, "general");
-					} else {
-						// read in the domain
-						String domain = st.nextToken();
-						voice = new MaryClient.Voice(name, locale, gender, domain);
-					}
-
-					voice.setSynthesizerType(synthesizerType);
+				if (!currentVoice.has("domain")) {
+					voice = new MaryClient.Voice(name, locale, gender, "general");
 				} else {
-					if (!st.hasMoreTokens()) {
-						// assume domain is general
-						voice = new MaryClient.Voice(name, locale, gender, "general");
-					} else {
-						// read in the domain
-						String domain = st.nextToken();
-						voice = new MaryClient.Voice(name, locale, gender, domain);
-					}
+					String domain = currentVoice.get("domain").toString().replace("\"", "");
+					voice = new MaryClient.Voice(name, locale, gender, domain);
 				}
-
+				if (isServerVersionAtLeast("3.5.0")) {
+					String synthesizerType = currentVoice.has("type") ? currentVoice.get("type").toString().replace("\"", "")
+							: "non-specified";
+					voice.setSynthesizerType(synthesizerType);
+				}
 				allVoices.add(voice);
 				Vector<MaryClient.Voice> localeVoices = null;
 				if (voicesByLocaleMap.containsKey(locale)) {
@@ -254,6 +245,56 @@ public class MaryFormData {
 				}
 				localeVoices.add(voice);
 			}
+			// for (int i=0; i<voiceStrings.length; i++) {
+			// StringTokenizer st = new StringTokenizer(voiceStrings[i]);
+			// if (!st.hasMoreTokens()) continue; // ignore entry
+			// String name = st.nextToken();
+			// if (!st.hasMoreTokens()) continue; // ignore entry
+			// String localeString = st.nextToken();
+			// Locale locale = string2locale(localeString);
+			// assert locale != null;
+			// if (!st.hasMoreTokens()) continue; // ignore entry
+			// String gender = st.nextToken();
+			//
+			// MaryClient.Voice voice = null;
+			// if (isServerVersionAtLeast("3.5.0")) {
+			// String synthesizerType;
+			// if (!st.hasMoreTokens())
+			// synthesizerType = "non-specified";
+			// else
+			// synthesizerType = st.nextToken();
+			//
+			// if (!st.hasMoreTokens()) {
+			// //assume domain is general
+			// voice = new MaryClient.Voice(name, locale, gender, "general");
+			// } else {
+			// //read in the domain
+			// String domain = st.nextToken();
+			// voice = new MaryClient.Voice(name, locale, gender, domain);
+			// }
+			//
+			// voice.setSynthesizerType(synthesizerType);
+			// } else {
+			// if (!st.hasMoreTokens()) {
+			// //assume domain is general
+			// voice = new MaryClient.Voice(name, locale, gender, "general");
+			// } else {
+			// //read in the domain
+			// String domain = st.nextToken();
+			// voice = new MaryClient.Voice(name, locale, gender, domain);
+			// }
+			// }
+			//
+			// allVoices.add(voice);
+			// Vector<MaryClient.Voice> localeVoices = null;
+			// if (voicesByLocaleMap.containsKey(locale)) {
+			// localeVoices = voicesByLocaleMap.get(locale);
+			// } else {
+			// localeVoices = new Vector<MaryClient.Voice>();
+			// voicesByLocaleMap.put(locale, localeVoices);
+			// }
+			// localeVoices.add(voice);
+			// }
 		}
 	}
 
@@ -517,7 +558,8 @@ public class MaryFormData {
 
 			// Check box
 			selected = keyValuePairs.get("effect_" + currentEffectName + "_selected");
-			if (selected != null && selected.compareTo("on") == 0) // Effect is selected
+			if (selected != null && selected.compareTo("on") == 0) // Effect is
+																	// selected
 				effectsBoxData.getControlData(i).setSelected(true);
 			else
 				// If not found, effect is not selected
@@ -544,7 +586,8 @@ public class MaryFormData {
 		return tmp >= 0;
 	}
 
-	// Check if all selections are appropriately made, i.e. no array bounds exceeded etc
+	// Check if all selections are appropriately made, i.e. no array bounds
+	// exceeded etc
 	public void checkAndCorrectSelections() {
 		audioFormatSelected = MathUtils.CheckLimits(audioFormatSelected, 0, audioFileFormatTypes.size() - 1);
 		audioOutSelected = MathUtils.CheckLimits(audioOutSelected, 0, audioOutTypes.size() - 1);
