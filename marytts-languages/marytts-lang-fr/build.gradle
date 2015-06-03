@@ -1,4 +1,21 @@
+apply plugin: 'groovy'
+
 dependencies {
+    testCompile localGroovy()
     testCompile testNG
     testCompile xmlunit
+}
+
+test {
+    useTestNG() {
+        suiteXmlBuilder().suite(name: 'lexicon') {
+            parameter(name: 'allophoneset', value: file('lib/modules/fr/lexicon/allophones.fr.xml'))
+            parameter(name: 'lexicon', value: file('lib/modules/fr/lexicon/fr.txt'))
+            test(name: 'lexicon') {
+                classes([:]) {
+                    'class'(name: 'marytts.language.fr.LTSTest')
+                }
+            }
+        }
+    }
 }
