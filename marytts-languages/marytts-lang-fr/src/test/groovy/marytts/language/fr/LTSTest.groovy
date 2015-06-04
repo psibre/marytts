@@ -25,13 +25,6 @@ class LTSTest {
 
     @Test
     @Parameters(['allophoneset', 'lexicon'])
-    void testParameters(String allophoneSetPath, String lexiconPath) {
-        Assert.assertTrue(allophoneSetPath.endsWith('allophones.fr.xml'))
-        Assert.assertTrue(lexiconPath.endsWith('fr.txt'))
-    }
-
-    @Test
-    @Parameters(['allophoneset', 'lexicon'])
     void canReadResources(String allophoneSetPath, String lexiconPath) {
         FileAssert.assertReadable(allophoneSetFile)
         FileAssert.assertReadable(lexiconFile)
