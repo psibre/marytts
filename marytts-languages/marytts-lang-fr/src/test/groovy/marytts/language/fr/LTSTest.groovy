@@ -1,5 +1,8 @@
 package marytts.language.fr
 
+import marytts.modules.phonemiser.AllophoneSet
+import marytts.modules.phonemiser.TrainedLTS
+
 import org.testng.Assert
 import org.testng.FileAssert
 import org.testng.annotations.*
@@ -8,12 +11,16 @@ class LTSTest {
 
     def allophoneSetFile
     def lexiconFile
+    def lts
 
     @BeforeSuite
     @Parameters(['allophoneset', 'lexicon'])
     void setUp(String allophoneSetPath, String lexiconPath) {
         allophoneSetFile = new File(allophoneSetPath)
         lexiconFile = new File(lexiconPath)
+        def allophoneSet = AllophoneSet.getAllophoneSet(allophoneSetFile.newInputStream(), 'test')
+        def ltsStream = getClass().getResourceAsStream('/marytts/language/fr/lexicon/fr.lts')
+        lts = new TrainedLTS(allophoneSet, ltsStream, false);
     }
 
     @Test
@@ -38,9 +45,12 @@ class LTSTest {
     }
 
     @Test(dataProvider = 'lexicon')
-    void test(String lemma, String transcription, String pos) {
+    void testLTS(String lemma, String expected, String pos) {
         Assert.assertNotNull(lemma)
-        Assert.assertNotNull(transcription)
+        Assert.assertNotNull(expected)
+        def predicted = lts.predictPronunciation(lemma)
+        def actual = lts.syllabify(predicted)?.replaceAll(' ', '')
+        Assert.assertEquals(actual, expected)
     }
 
 }
