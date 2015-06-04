@@ -49,6 +49,7 @@ class LTSTest {
         Assert.assertNotNull(lemma)
         Assert.assertNotNull(expected)
         def predicted = lts.predictPronunciation(lemma)
+        Assert.assertEquals(predicted, predicted.replaceAll('1', ''), 'Should not find trailing ones on vowels:')
         def actual = lts.syllabify(predicted)?.replaceAll(' ', '')
         Assert.assertEquals(actual, expected)
     }
