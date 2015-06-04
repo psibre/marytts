@@ -14,12 +14,12 @@ class LTSTest {
     def lts
 
     @BeforeSuite
-    @Parameters(['allophoneset', 'lexicon'])
-    void setUp(String allophoneSetPath, String lexiconPath) {
+    @Parameters(['allophoneset', 'lexicon', 'lts'])
+    void setUp(String allophoneSetPath, String lexiconPath, String ltsResourcePath) {
         allophoneSetFile = new File(allophoneSetPath)
         lexiconFile = new File(lexiconPath)
         def allophoneSet = AllophoneSet.getAllophoneSet(allophoneSetFile.newInputStream(), 'test')
-        def ltsStream = getClass().getResourceAsStream('/marytts/language/fr/lexicon/fr.lts')
+        def ltsStream = getClass().getResourceAsStream(ltsResourcePath)
         lts = new TrainedLTS(allophoneSet, ltsStream, false);
     }
 
