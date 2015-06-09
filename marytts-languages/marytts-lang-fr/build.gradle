@@ -8,6 +8,7 @@ test {
             parameter(name: 'allophoneset', value: file('lib/modules/fr/lexicon/allophones.fr.xml'))
             parameter(name: 'lexicon', value: file('lib/modules/fr/lexicon/fr.txt'))
             parameter(name: 'lts', value: '/marytts/language/fr/lexicon/fr.lts')
+            parameter(name: 'fst', value: '/marytts/language/fr/lexicon/fr_lexicon.fst')
             test(name: 'lexicon') {
                 classes([:]) {
                     'class'(name: 'marytts.language.fr.FrenchLTSTest')

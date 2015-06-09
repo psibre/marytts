@@ -4,6 +4,7 @@ test {
             parameter(name: 'allophoneset', value: file('lib/modules/de/lexicon/allophones.de.xml'))
             parameter(name: 'lexicon', value: file('lib/modules/de/lexicon/de.txt'))
             parameter(name: 'lts', value: '/marytts/language/de/lexicon/de.lts')
+            parameter(name: 'fst', value: '/marytts/language/de/lexicon/de_lexicon.fst')
             test(name: 'lexicon') {
                 classes([:]) {
                     'class'(name: 'marytts.language.de.GermanLTSTest')
