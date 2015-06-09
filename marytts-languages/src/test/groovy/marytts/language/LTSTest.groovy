@@ -30,9 +30,13 @@ class LTSTest {
         FileAssert.assertReadable(lexiconFile)
     }
 
+    Collection parseLexicon() {
+        lexiconFile.readLines().findAll { it && !(it =~ /^\s*#/) }
+    }
+
     @DataProvider
     Object[][] lexicon() {
-        lexiconFile.readLines().findAll { !(it =~ /^\s*#/) }.collect {
+        parseLexicon().collect {
             it.tokenize().withLazyDefault {}[0..2]
         }
     }
