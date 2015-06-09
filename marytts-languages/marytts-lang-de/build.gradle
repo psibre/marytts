@@ -1,3 +1,40 @@
+configurations {
+    lexicon
+}
+
+sourceSets {
+    lexicon {
+        resources {
+            srcDir 'lib/modules/de/lexicon'
+        }
+    }
+}
+
+dependencies {
+    lexiconCompile rootProject.allprojects.find { it.name == 'marytts-builder' }
+}
+
+processLexiconResources {
+    filesMatching('de.txt') {
+        // drop lines that are comments or lack a transcription
+        def regex = new org.apache.tools.ant.types.RegularExpression()
+        regex.pattern = /^\s*[^#\s]+\s+[^\s]+/
+        filter(org.apache.tools.ant.filters.LineContainsRegExp, regexps: [regex])
+        // insert pipe delimiter
+        filter { it.split(' ', 2).join('|') }
+    }
+}
+
+task createLexicon(type: JavaExec) {
+    dependsOn processLexiconResources
+    workingDir sourceSets.lexicon.output.resourcesDir
+    inputs.files fileTree(workingDir).include('allophones.de.xml', 'de.txt')
+    outputs.files file("$workingDir/foo.fst"), file("$workingDir/bar.lts")
+    main 'marytts.tools.newlanguage.LexiconCreator'
+    args inputs.files.files + outputs.files.files
+    classpath sourceSets.lexicon.runtimeClasspath
+}
+
 test {
     useTestNG() {
         suiteXmlBuilder().suite(name: 'lexicon') {
