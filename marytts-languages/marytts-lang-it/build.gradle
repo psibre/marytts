@@ -1,0 +1,14 @@
+test {
+    useTestNG() {
+        suiteXmlBuilder().suite(name: 'lexicon') {
+            parameter(name: 'allophoneset', value: file('lib/modules/it/lexicon/allophones.it.xml'))
+            parameter(name: 'lexicon', value: file('lib/modules/it/lexicon/it.txt'))
+            parameter(name: 'lts', value: '/marytts/language/it/lexicon/it.lts')
+            test(name: 'lexicon') {
+                classes([:]) {
+                    'class'(name: 'marytts.language.it.ItalianLTSTest')
+                }
+            }
+        }
+    }
+}
