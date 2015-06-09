@@ -50,7 +50,7 @@ class LTSTest {
         softAssert.assertEquals(predicted, predicted.replaceAll('1', ''), 'Should not find trailing ones on vowels:')
         def actual
         try {
-            lts.syllabify(predicted)?.replaceAll(' ', '')
+            actual = lts.syllabify(predicted)?.replaceAll(' ', '')
         } catch (IllegalArgumentException e) {
             softAssert.fail("Could not syllabify: $e.message")
         }
