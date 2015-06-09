@@ -3,9 +3,9 @@ package marytts.language.fr
 import marytts.modules.phonemiser.AllophoneSet
 import marytts.modules.phonemiser.TrainedLTS
 
-import org.testng.Assert
 import org.testng.FileAssert
 import org.testng.annotations.*
+import org.testng.asserts.SoftAssert
 
 class LTSTest {
 
@@ -39,12 +39,19 @@ class LTSTest {
 
     @Test(dataProvider = 'lexicon')
     void testLTS(String lemma, String expected, String pos) {
-        Assert.assertNotNull(lemma)
-        Assert.assertNotNull(expected)
+        def softAssert = new SoftAssert()
+        softAssert.assertNotNull(lemma)
+        softAssert.assertNotNull(expected, 'lexicon entry must have a transcription:')
         def predicted = lts.predictPronunciation(lemma)
-        Assert.assertEquals(predicted, predicted.replaceAll('1', ''), 'Should not find trailing ones on vowels:')
-        def actual = lts.syllabify(predicted)?.replaceAll(' ', '')
-        Assert.assertEquals(actual, expected)
+        softAssert.assertEquals(predicted, predicted.replaceAll('1', ''), 'Should not find trailing ones on vowels:')
+        def actual
+        try {
+            lts.syllabify(predicted)?.replaceAll(' ', '')
+        } catch (IllegalArgumentException e) {
+            softAssert.fail("Could not syllabify: $e.message")
+        }
+        softAssert.assertEquals(actual, expected, 'transcriptions differ:')
+        softAssert.assertAll()
     }
 
 }
