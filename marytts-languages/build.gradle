@@ -1,6 +1,16 @@
-subprojects {
+allprojects {
+    apply plugin: 'groovy'
+
     dependencies {
         compile rootProject.allprojects.find { it.name == 'marytts-runtime' }
+        testCompile localGroovy()
         testCompile junit
+        testCompile testNG
+    }
+}
+
+subprojects {
+    dependencies {
+        testCompile rootProject.allprojects.find { it.name == 'marytts-languages' }.sourceSets.test.output
     }
 }

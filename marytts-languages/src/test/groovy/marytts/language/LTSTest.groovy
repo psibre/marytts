@@ -1,4 +1,4 @@
-package marytts.language.fr
+package marytts.language
 
 import marytts.modules.phonemiser.AllophoneSet
 import marytts.modules.phonemiser.TrainedLTS

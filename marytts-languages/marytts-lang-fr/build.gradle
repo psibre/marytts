@@ -1,8 +1,4 @@
-apply plugin: 'groovy'
-
 dependencies {
-    testCompile localGroovy()
-    testCompile testNG
     testCompile xmlunit
 }
 
@@ -14,7 +10,7 @@ test {
             parameter(name: 'lts', value: '/marytts/language/fr/lexicon/fr.lts')
             test(name: 'lexicon') {
                 classes([:]) {
-                    'class'(name: 'marytts.language.fr.LTSTest')
+                    'class'(name: 'marytts.language.fr.FrenchLTSTest')
                 }
             }
         }
