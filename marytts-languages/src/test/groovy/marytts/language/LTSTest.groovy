@@ -21,17 +21,19 @@ class LTSTest {
         allophoneSetFile = new File(allophoneSetPath)
         lexiconFile = new File(lexiconPath)
         def allophoneSet = AllophoneSet.getAllophoneSet(allophoneSetFile.newInputStream(), 'test')
-        def ltsStream = getClass().getResourceAsStream(ltsResourcePath)
+        def ltsStream = new File(ltsResourcePath).newInputStream()
         lts = new TrainedLTS(allophoneSet, ltsStream, false);
-        def fstStream = getClass().getResourceAsStream(fstResourcePath)
+        def fstStream = new File(fstResourcePath).newInputStream()
         fst = new FSTLookup(fstStream, null);
     }
 
     @Test
-    @Parameters(['allophoneset', 'lexicon'])
-    void canReadResources(String allophoneSetPath, String lexiconPath) {
+    @Parameters(['allophoneset', 'lexicon', 'lts', 'fst'])
+    void canReadResources(String allophoneSetPath, String lexiconPath, String ltsResourcePath, String fstResourcePath) {
         FileAssert.assertReadable(allophoneSetFile)
         FileAssert.assertReadable(lexiconFile)
+        FileAssert.assertReadable(new File(ltsResourcePath))
+        FileAssert.assertReadable(new File(fstResourcePath))
     }
 
     Collection parseLexicon() {
