@@ -1,8 +1,18 @@
 allprojects {
     apply plugin: 'groovy'
 
+    configurations {
+        lexicon
+    }
+
+    sourceSets {
+        lexicon
+    }
+
     dependencies {
         compile rootProject.allprojects.find { it.name == 'marytts-runtime' }
+        lexiconCompile localGroovy()
+        lexiconCompile rootProject.allprojects.find { it.name == 'marytts-builder' }
         testCompile localGroovy()
         testCompile junit
         testCompile testNG
@@ -11,6 +21,18 @@ allprojects {
 
 subprojects {
     dependencies {
+        lexiconCompile rootProject.allprojects.find { it.name == 'marytts-languages' }.sourceSets.lexicon.output
         testCompile rootProject.allprojects.find { it.name == 'marytts-languages' }.sourceSets.test.output
+    }
+
+    task createLexicon {
+        dependsOn lexiconClasses
+        doLast {
+            javaexec {
+                main 'marytts.language.LexiconCreator'
+                args inputs.files.files + outputs.files.files
+                classpath sourceSets.lexicon.runtimeClasspath
+            }
+        }
     }
 }

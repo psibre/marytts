@@ -1,18 +1,9 @@
-configurations {
-    lexicon
-}
-
 sourceSets {
     lexicon {
         resources {
             srcDir 'lib/modules/de/lexicon'
         }
     }
-}
-
-dependencies {
-    lexiconCompile rootProject.allprojects.find { it.name == 'marytts-builder' }
-    lexiconCompile localGroovy()
 }
 
 processLexiconResources {
@@ -26,18 +17,10 @@ processLexiconResources {
     }
 }
 
-task createLexicon {
-    dependsOn lexiconClasses
+createLexicon {
     def workingDir = sourceSets.lexicon.output.resourcesDir
     inputs.files file("$workingDir/allophones.de.xml"), file("$workingDir/de.txt")
     outputs.files file("$workingDir/de_lexicon.fst"), file("$workingDir/de.lts")
-    doLast {
-        javaexec {
-            main 'marytts.language.LexiconCreator'
-            args inputs.files.files + outputs.files.files
-            classpath sourceSets.lexicon.runtimeClasspath
-        }
-    }
 }
 
 processResources {
