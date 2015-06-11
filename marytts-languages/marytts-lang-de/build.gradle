@@ -26,14 +26,18 @@ processLexiconResources {
     }
 }
 
-task createLexicon(type: JavaExec) {
-    dependsOn processLexiconResources
-    workingDir sourceSets.lexicon.output.resourcesDir
+task createLexicon {
+    dependsOn lexiconClasses
+    def workingDir = sourceSets.lexicon.output.resourcesDir
     inputs.files file("$workingDir/allophones.de.xml"), file("$workingDir/de.txt")
     outputs.files file("$workingDir/de_lexicon.fst"), file("$workingDir/de.lts")
-    main 'marytts.language.LexiconCreator'
-    args inputs.files.files + outputs.files.files
-    classpath sourceSets.lexicon.runtimeClasspath
+    doLast {
+        javaexec {
+            main 'marytts.language.LexiconCreator'
+            args inputs.files.files + outputs.files.files
+            classpath sourceSets.lexicon.runtimeClasspath
+        }
+    }
 }
 
 test {
