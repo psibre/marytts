@@ -28,7 +28,6 @@ processLexiconResources {
 
 task createLexicon {
     dependsOn lexiconClasses
-    test.dependsOn it
     def workingDir = sourceSets.lexicon.output.resourcesDir
     inputs.files file("$workingDir/allophones.de.xml"), file("$workingDir/de.txt")
     outputs.files file("$workingDir/de_lexicon.fst"), file("$workingDir/de.lts")
@@ -38,6 +37,12 @@ task createLexicon {
             args inputs.files.files + outputs.files.files
             classpath sourceSets.lexicon.runtimeClasspath
         }
+    }
+}
+
+processResources {
+    from createLexicon, {
+        rename { "marytts/language/de/lexicon/$it" }
     }
 }
 
