@@ -1,5 +1,36 @@
+sourceSets {
+    lexicon {
+        resources {
+            srcDir 'lib/modules/fr/lexicon'
+        }
+    }
+}
+
 dependencies {
     testCompile xmlunit
+}
+
+processLexiconResources {
+    filesMatching('fr.txt') {
+        // drop lines that are comments or lack a transcription
+        def regex = new org.apache.tools.ant.types.RegularExpression()
+        regex.pattern = /^\s*[^#\s]+\s+[^\s]+/
+        filter(org.apache.tools.ant.filters.LineContainsRegExp, regexps: [regex])
+        // insert pipe delimiter
+        filter { it.split(' ', 2).join('|') }
+    }
+}
+
+createLexicon {
+    def workingDir = sourceSets.lexicon.output.resourcesDir
+    inputs.files file("$workingDir/allophones.fr.xml"), file("$workingDir/fr.txt")
+    outputs.files file("$workingDir/fr_lexicon.fst"), file("$workingDir/fr.lts")
+}
+
+processResources {
+    from createLexicon, {
+        rename { "marytts/language/fr/lexicon/$it" }
+    }
 }
 
 test {
