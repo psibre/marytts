@@ -9,8 +9,8 @@ class FrenchLTSTest extends LTSTest {
 
     @Test
     void testParseLexicon() {
-        def expected = ["à 'a functional"]
-        def actual = parseLexicon().take(1)
+        def expected = ["à", "'a", "functional"]
+        def actual = parseLexicon().first()
         Assert.assertEquals(actual, expected)
     }
 

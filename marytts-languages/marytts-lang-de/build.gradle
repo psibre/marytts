@@ -13,7 +13,7 @@ processLexiconResources {
         regex.pattern = /^\s*[^#\s]+\s+[^\s]+/
         filter(org.apache.tools.ant.filters.LineContainsRegExp, regexps: [regex])
         // insert pipe delimiter
-        filter { it.split(' ', 2).join('|') }
+        filter { it.split(' ', 3).join('|') }
     }
 }
 

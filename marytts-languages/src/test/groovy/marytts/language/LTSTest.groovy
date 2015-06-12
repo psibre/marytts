@@ -35,14 +35,16 @@ class LTSTest {
     }
 
     Collection parseLexicon() {
-        lexiconFile.readLines().findAll { it && !(it =~ /^\s*#/) }
+        lexiconFile.readLines().findAll {
+            it && !(it =~ /^\s*#/)
+        }.collect {
+            it.tokenize().withLazyDefault {}[0..2]
+        }
     }
 
     @DataProvider
     Object[][] lexicon() {
-        parseLexicon().collect {
-            it.tokenize().withLazyDefault {}[0..2]
-        }
+        parseLexicon()
     }
 
     @Test(dataProvider = 'lexicon')
