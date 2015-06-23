@@ -565,7 +565,14 @@ public class AllophoneSet {
 
 		// if primary stress was not provided, assign it to initial syllable
 		if (!foundPrimaryStress) {
-			initialSyllable.setStress(Stress.PRIMARY);
+			Syllable stressedSyllable;
+			// TODO dirty hack because we cannot access MaryProperties in this module
+			if (locale.getLanguage().equals("fr")) {
+				stressedSyllable = (Syllable) phonesAndSyllables.get(phonesAndSyllables.size() - 1);
+			} else {
+				stressedSyllable = initialSyllable;
+			}
+			stressedSyllable.setStress(Stress.PRIMARY);
 		}
 
 		// join Syllables with dashes and return the String
