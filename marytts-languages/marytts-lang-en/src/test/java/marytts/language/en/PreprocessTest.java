@@ -172,6 +172,14 @@ public class PreprocessTest {
 		Assert.assertEquals(actual, word);
 	}
 
+	@Test(expectedExceptions = ParseException.class)
+	public void testExpandUnexpectedDate() throws ParseException {
+		String date = "23.01.2001";
+		String expected = "January twenty-third two thousand one";
+		String actual = module.expandDate(date);
+		Assert.assertEquals(actual, expected);
+	}
+
 	@Test(dataProvider = "abbrevExpandData")
 	public void testExpandAbbrev(String token, String word) throws ParseException {
 		String actual = module.expandAbbreviation(token, false);
