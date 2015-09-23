@@ -518,23 +518,31 @@ public class LocalMaryInterface implements MaryInterface {
 		}
 
 		// set parameters from Java properties, falling back to defaults already configured
-		mary.setInputType(System.getProperty("INPUT_TYPE", mary.getInputType()));
-		mary.setOutputType(System.getProperty("OUTPUT_TYPE", mary.getOutputType()));
-		// locale needs special treatment:
-		if (System.getProperty("LOCALE") != null) {
-			Locale newLocale = Locale.forLanguageTag(System.getProperty("LOCALE"));
-			try {
-				mary.setLocale(newLocale);
-			} catch (IllegalArgumentException e) {
-				System.err.format("Error setting locale to '%s': %s", System.getProperty("LOCALE"), e.getMessage());
-				System.exit(1);
-			}
+		String inputType = System.getProperty("INPUT_TYPE");
+		if (inputType != null) {
+			mary.setInputType(inputType);
+		} else {
+			inputType = mary.getInputType();
 		}
-		try {
-			mary.setVoice(System.getProperty("VOICE", mary.getVoice()));
-		} catch (IllegalArgumentException e) {
-			System.err.format("Error setting voice (locale %s): %s", mary.getLocale(), e.getMessage());
-			System.exit(1);
+		String outputType = System.getProperty("OUTPUT_TYPE");
+		if (outputType != null) {
+			mary.setOutputType(outputType);
+		} else {
+			outputType = mary.getOutputType();
+		}
+		String locale = System.getProperty("LOCALE");
+		if (locale != null) {
+			Locale newLocale = Locale.forLanguageTag(locale);
+			mary.setLocale(newLocale);
+			locale = newLocale.toString();
+		} else {
+			locale = mary.getLocale().toString();
+		}
+		String voice = System.getProperty("VOICE");
+		if (voice != null) {
+			mary.setVoice(voice);
+		} else {
+			voice = mary.getVoice();
 		}
 
 		// batch synthesis from args, pairwise
@@ -543,13 +551,13 @@ public class LocalMaryInterface implements MaryInterface {
 			File outputFile = new File(args[a + 1]);
 			try {
 				String input = FileUtils.readFileToString(inputFile, "UTF-8");
-				if (mary.isTextType(mary.getOutputType())) {
+				if (mary.isTextType(outputType)) {
 					String output = mary.generateText(input);
 					FileUtils.writeStringToFile(outputFile, output, "UTF-8");
-				} else if (mary.isXMLType(mary.getOutputType())) {
+				} else if (mary.isXMLType(outputType)) {
 					Document output = mary.generateXML(input);
 					DomUtils.document2File(output, outputFile);
-				} else if (mary.isAudioType(mary.getOutputType())) {
+				} else if (mary.isAudioType(outputType)) {
 					AudioInputStream output = mary.generateAudio(input);
 					MaryAudioUtils.writeWavFile(MaryAudioUtils.getSamplesAsDoubleArray(output), outputFile.getCanonicalPath(),
 							output.getFormat());
@@ -559,8 +567,7 @@ public class LocalMaryInterface implements MaryInterface {
 				System.out.format("Synthesized %s -> %s\n", inputFile.getAbsolutePath(), outputFile.getAbsolutePath());
 			} catch (IOException | SynthesisException | MaryConfigurationException e) {
 				System.err.format("Could not synthesize from %s to %s (input type: %s, output type: %s): %s",
-						inputFile.getAbsolutePath(), outputFile.getAbsolutePath(), mary.getInputType(), mary.getOutputType(),
-						e.getMessage());
+						inputFile.getAbsolutePath(), outputFile.getAbsolutePath(), inputType, outputType, e.getMessage());
 				continue;
 			}
 		}
