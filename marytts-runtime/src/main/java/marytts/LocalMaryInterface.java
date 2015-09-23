@@ -19,6 +19,8 @@
  */
 package marytts;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -28,6 +30,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
+import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
 
 import marytts.config.LanguageConfig;
@@ -39,6 +42,8 @@ import marytts.exceptions.SynthesisException;
 import marytts.modules.synthesis.Voice;
 import marytts.server.Request;
 import marytts.util.MaryRuntimeUtils;
+import marytts.util.data.audio.MaryAudioUtils;
+import marytts.util.dom.DomUtils;
 
 /**
  * This class and its subclasses are intended to grow into a simple-to-use, unified interface for both the local MARY server and a
@@ -500,5 +505,64 @@ public class LocalMaryInterface implements MaryInterface {
 	@Override
 	public boolean isAudioType(String dataType) {
 		return "AUDIO".equals(dataType);
+	}
+
+	public static void main(String[] args) {
+		// init mary
+		MaryInterface mary = null;
+		try {
+			mary = new LocalMaryInterface();
+		} catch (MaryConfigurationException e) {
+			System.err.println("Error initializing MaryTTS: " + e.getMessage());
+			System.exit(1);
+		}
+
+		// set parameters from Java properties, falling back to defaults already configured
+		mary.setInputType(System.getProperty("INPUT_TYPE", mary.getInputType()));
+		mary.setOutputType(System.getProperty("OUTPUT_TYPE", mary.getOutputType()));
+		// locale needs special treatment:
+		if (System.getProperty("LOCALE") != null) {
+			Locale newLocale = Locale.forLanguageTag(System.getProperty("LOCALE"));
+			try {
+				mary.setLocale(newLocale);
+			} catch (IllegalArgumentException e) {
+				System.err.format("Error setting locale to '%s': %s", System.getProperty("LOCALE"), e.getMessage());
+				System.exit(1);
+			}
+		}
+		try {
+			mary.setVoice(System.getProperty("VOICE", mary.getVoice()));
+		} catch (IllegalArgumentException e) {
+			System.err.format("Error setting voice (locale %s): %s", mary.getLocale(), e.getMessage());
+			System.exit(1);
+		}
+
+		// batch synthesis from args, pairwise
+		for (int a = 0; a < args.length; a += 2) {
+			File inputFile = new File(args[a]);
+			File outputFile = new File(args[a + 1]);
+			try {
+				String input = FileUtils.readFileToString(inputFile, "UTF-8");
+				if (mary.isTextType(mary.getOutputType())) {
+					String output = mary.generateText(input);
+					FileUtils.writeStringToFile(outputFile, output, "UTF-8");
+				} else if (mary.isXMLType(mary.getOutputType())) {
+					Document output = mary.generateXML(input);
+					DomUtils.document2File(output, outputFile);
+				} else if (mary.isAudioType(mary.getOutputType())) {
+					AudioInputStream output = mary.generateAudio(input);
+					MaryAudioUtils.writeWavFile(MaryAudioUtils.getSamplesAsDoubleArray(output), outputFile.getCanonicalPath(),
+							output.getFormat());
+				} else {
+					throw new SynthesisException("Cannot synthesize to %s" + mary.getOutputType());
+				}
+				System.out.format("Synthesized %s -> %s\n", inputFile.getAbsolutePath(), outputFile.getAbsolutePath());
+			} catch (IOException | SynthesisException | MaryConfigurationException e) {
+				System.err.format("Could not synthesize from %s to %s (input type: %s, output type: %s): %s",
+						inputFile.getAbsolutePath(), outputFile.getAbsolutePath(), mary.getInputType(), mary.getOutputType(),
+						e.getMessage());
+				continue;
+			}
+		}
 	}
 }
