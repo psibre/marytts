@@ -1,0 +1,15 @@
+plugins {
+    id 'groovy'
+}
+
+apply from: "$rootDir/buildLogic.gradle"
+
+dependencies {
+    compile project(':marytts-runtime')
+    testCompile libs.groovy
+    testCompile libs.testng
+}
+
+test {
+    useTestNG()
+}
