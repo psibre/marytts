@@ -10,6 +10,6 @@ dependencies {
     testCompile libs.testng
 }
 
-test {
+tasks.withType(Test) {
     useTestNG()
 }
