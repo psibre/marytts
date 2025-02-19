@@ -19,7 +19,7 @@ marytts {
 
 dependencies {
     implementation project(':marytts-languages:marytts-lang-en')
-    testImplementation testLibs.testng
+    testImplementation libs.testng
 }
 
 test {

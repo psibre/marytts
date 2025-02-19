@@ -22,9 +22,9 @@ dependencies {
     implementation libs.slf4j.log4j12
     implementation libs.opennlp.tools
     implementation libs.trove4j
-    testImplementation testLibs.junit
-    testImplementation testLibs.assertj
+    testImplementation libs.junit
+    testImplementation libs.assertj
     integrationTestImplementation localGroovy()
-    integrationTestImplementation testLibs.junit
+    integrationTestImplementation libs.junit
     integrationTestRuntimeOnly project(':voice-cmu-slt-hsmm')
 }
