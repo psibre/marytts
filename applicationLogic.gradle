@@ -6,7 +6,9 @@ dependencies {
     runtimeOnly project(':voice-cmu-slt-hsmm')
 }
 
-mainClassName = 'marytts.server.Mary'
+application {
+    mainClass = 'marytts.server.Mary'
+}
 
 run {
     dependsOn installDist
